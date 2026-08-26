@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f7f9; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;">
+<table width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f4f7f9; padding: 40px 0;">
+    <tr>
+        <td align="center">
+            <table width="500" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <tr>
+                    <td style="background-color: #4A90E2; padding: 40px 20px; text-align: center;">
+                        <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: -1px;" th:text="#{email.title}"></h1>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 40px 30px;">
+                        <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: #333333;">
+                            안녕하세요! 서비스 이용을 위해 이메일 인증이 필요합니다.<br>
+                            아래의 <strong>인증번호</strong>를 복사하여 인증창에 입력해 주세요.
+                        </p>
+
+                        <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 4px; padding: 30px; text-align: center; margin: 30px 0;">
+                            <span style="font-size: 36px; font-weight: bold; color: #4A90E2; letter-spacing: 8px; margin-left: 8px;" th:text="${authCode}">인증번호예시</span>
+                        </div>
+
+                        <p style="margin: 20px 0 0 0; font-size: 14px; line-height: 1.6; color: #666666;">
+                            본 인증 코드는 <strong>5분 이내</strong>에만 유효합니다.<br>
+                            만약 본인이 요청한 것이 아니라면, 이 메일을 무시하셔도 됩니다.
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="background-color: #f1f3f5; padding: 20px; text-align: center;">
+                        <p style="margin: 0; font-size: 12px; color: #adb5bd; line-height: 1.4;">
+                            본 메일은 발신 전용입니다. 문의 사항은 고객센터를 이용해 주세요.<br>
+                            &copy;<span th:text="#{email.footer.title}"></span>
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>비밀번호 재확인</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { background-color: #fff; }
+
+        /* 중앙 정렬 컨테이너 */
+        .auth-wrapper {
+            max-width: 420px;
+            margin: 80px auto;
+            padding: 0 20px;
+        }
+
+        /* 쿠팡 특유의 로고 폰트 스타일 (이미지가 없을 경우 대비) */
+        .brand-logo {
+            font-size: 32px;
+            font-weight: 900;
+            color: #4285f4;
+            text-align: center;
+            margin-bottom: 40px;
+            letter-spacing: -2px;
+            text-decoration: none;
+            display: block;
+        }
+
+        /* 비밀번호 입력 영역 박스 */
+        .auth-box {
+            border: 1px solid #ddd;
+            padding: 40px 30px;
+        }
+
+        .auth-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .auth-desc {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .user-info {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #111;
+            margin-bottom: 15px;
+        }
+
+        /* 입력창 디자인 */
+        .form-control {
+            height: 48px;
+            border: 1px solid #ccc;
+            border-radius: 2px;
+            margin-bottom: 15px;
+        }
+
+        .form-control:focus {
+            border-color: #111;
+            box-shadow: none;
+        }
+
+        /* 확인 버튼 (쿠팡 블루/블랙 테마) */
+        .btn-confirm {
+            background-color: #0074e9;
+            color: white;
+            font-weight: bold;
+            height: 50px;
+            border-radius: 2px;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-confirm:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        /* 에러 메시지 스타일 */
+        .error-msg {
+            color: #e52e2e;
+            font-size: 0.8rem;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
+
+        /* 취소 버튼 스타일 추가 */
+        .btn-cancel {
+            background-color: #fff;
+            color: #111;
+            font-weight: bold;
+            height: 50px;
+            border-radius: 2px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+
+        .btn-cancel:hover {
+            background-color: #fafafa;
+            border-color: #bbb;
+            color: #111;
+        }
+
+        .input-error {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="auth-wrapper">
+    <a href="/static" class="brand-logo" th:text="#{shop.title}">MYSHOP</a>
+
+    <div class="auth-box">
+        <h4 class="auth-title">비밀번호 재확인</h4>
+        <p class="auth-desc">
+            회원님의 정보를 안전하게 보호하기 위해<br>
+            비밀번호를 다시 한번 입력해 주세요.
+        </p>
+
+        <form th:action="@{/memberModifyCheckPW}" method="post" th:object="${loginMemberDto}">
+
+            <div class="text-danger mb-3" id="globalErrorMsg" th:if="${#fields.hasGlobalErrors()}"
+                 th:each="error : ${#fields.globalErrors()}" th:text="${error}">
+                글로벌 오류 메시지(비밀번호 에러)
+            </div>
+
+            <div class="user-info">
+                아이디 : <span th:text="*{id}">userId</span>
+                <input type="hidden" th:field="*{id}">
+            </div>
+
+            <div class="form-group">
+                <input type="password" name="password" class="form-control" th:field="*{password}" placeholder="비밀번호" th:errorclass="input-error">
+                <div class="error-msg" id="errorMsg" th:errors="*{password}">비밀번호 에러 메시지</div>
+                <div></div>
+            </div>
+
+            <div class="row no-gutters">
+                <div class="col-6 pr-1">
+                    <button type="submit" class="btn btn-confirm btn-block">확인</button>
+                </div>
+                <div class="col-6 pl-1">
+                    <button type="button" class="btn btn-cancel btn-block" onclick="history.back()">취소</button>
+                </div>
+                <div></div>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

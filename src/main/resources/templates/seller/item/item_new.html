@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>새 상품 등록 | 판매자 센터</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* 여기서는 메인 콘텐츠 영역만 포함합니다. */
+        body { background-color: #f8f9fa; }
+        .sidebar { background-color: #2c3e50; min-height: 100vh; color: white; padding-top: 20px; }
+        /* ... 기타 스타일 ... */
+    </style>
+
+    <style th:replace="~{seller/common :: sidebar_style}">
+        body {
+            background-color: #f8f9fa; /* 밝은 배경색 */
+        }
+        .sidebar {
+            background-color: #2c3e50; /* 다크 네이비 */
+            min-height: 100vh;
+            color: white;
+            padding-top: 20px;
+        }
+        .sidebar .nav-link {
+            color: #ecf0f1;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            transition: background-color 0.3s;
+        }
+        .sidebar .nav-link.active-menu,
+        .sidebar .nav-link:hover {
+            background-color: #34495e;
+            border-left: 5px solid #3498db;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="d-flex">
+
+    <div th:replace="~{seller/common :: sidebar}">
+        <div class="sidebar d-none d-md-block" style="width: 250px;">
+            <h3 class="text-center mb-4 text-white">📦 판매자 센터</h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="home.html" th:href="@{/seller}"><i class="fas fa-tachometer-alt me-2"></i> 대시보드</a>
+                <a class="nav-link" href="item/item_manage.html" th:href="@{/seller/item_manage}"><i class="fas fa-box me-2"></i> 상품 관리</a>
+                <a class="nav-link" href="delivery/order_delivery.html" th:href="@{/seller/order_delivery}"><i class="fas fa-shopping-cart me-2"></i> 주문/배송</a>
+                <a class="nav-link" href="request/request_manage.html" th:href="@{/seller/request_manage}"><i class="fas fa-undo-alt me-2"></i> 취소/반품 관리</a>
+                <a class="nav-link" href="inquiry/inquiry_manage.html" th:href="@{/seller/inquiry_manage}"><i class="fas fa-comment-dots me-2"></i> 고객 문의</a>
+                <a class="nav-link" href="../home/home.html" th:href="@{/}"><i class="fas fa-sign-out-alt me-2"></i> 로그아웃</a>
+            </nav>
+        </div>
+    </div>
+
+
+    <div id="page-content-wrapper" class="flex-grow-1 p-4">
+        <header class="mb-4 border-bottom pb-3">
+            <h1 class="h3 mb-0 text-dark"><i class="fas fa-plus me-2"></i> 새 상품 등록</h1>
+        </header>
+
+        <form th:action="@{/seller/item_new}" method="post" th:object="${addItemDto}" enctype="multipart/form-data">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-info-circle me-2"></i> 1. 기본 상품 정보</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label for="productName" class="form-label required">상품명</label>
+                            <input type="text" class="form-control" id="productName" th:field="*{name}" required placeholder="판매할 상품의 정확한 이름을 입력해주세요.">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="itemCategory" class="form-label required">카테고리</label>
+                            <select id="itemCategory" th:field="*{itemCategory}" class="form-select" required>
+                                <option selected disabled value="">선택하세요</option>
+                                <option th:each="itemCategory : ${T(myshop.shop.entity.item.ItemCategory).values()}"
+                                        th:value="${itemCategory.name()}"
+                                        th:text="${itemCategory}">의류/패션</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-dark">
+                    <h5><i class="fas fa-tags me-2"></i> 2. 가격 및 재고 설정</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="price" class="form-label required">판매 가격 (원)</label>
+                            <input type="number" class="form-control" id="price" th:field="*{price}" required min="100">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="discount" class="form-label">할인율 (%)</label>
+                            <input type="number" class="form-control" id="discount" th:field="*{discountPer}" value="0" min="0" max="100">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="totalStock" class="form-label required">총 재고 수량</label>
+                            <input type="number" class="form-control" id="totalStock" th:field="*{totalStock}" required min="1">
+                        </div>
+                    </div>
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" th:field="*{useOptions}" id="useOptions">
+                        <label class="form-check-label" for="useOptions">
+                            옵션(색상, 사이즈 등)을 사용하여 재고를 관리합니다.
+                        </label>
+                    </div>
+                    <div id="optionArea" class="mt-3 border p-3 bg-light rounded">
+                        <h6 class="border-bottom pb-2 text-dark">상품 옵션 설정</h6>
+                        <p class="text-muted small">옵션별로 재고와 가격을 다르게 설정할 수 있습니다.</p>
+
+                        <div id="optionList" class="mb-3">
+                        </div>
+
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addOptionRow()">
+                            <i class="fas fa-plus me-1"></i> 옵션 추가
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5><i class="fas fa-image me-2"></i> 3. 이미지 및 상세 설명</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="mainImage" class="form-label required">대표 이미지 (썸네일)</label>
+                        <input class="form-control" type="file" id="mainImage"  th:field="*{mainImage}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="subImages" class="form-label">추가 이미지</label>
+                        <input class="form-control" type="file" id="subImages" th:field="*{subImages}" multiple="multiple">
+                    </div>
+                    <div class="mb-3">
+                        <label for="content" class="form-label required">상품 상세 설명</label>
+                        <textarea class="form-control" id="content" th:field="*{content}" rows="8" required placeholder="상품의 특징, 사용법, 교환/환불 정책 등을 상세히 기재해주세요."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-5">
+                <button type="button" class="btn btn-secondary btn-lg" onclick="window.history.back();" th:onclick="|location.href='@{/seller/item_manage}'|">취소</button>
+                <button type="submit" class="btn btn-success btn-lg"><i class="fas fa-check-circle me-2"></i> 상품 등록 완료</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script th:inline="javascript">
+    // 페이지 로드 시 초기 상태 설정
+    document.addEventListener('DOMContentLoaded', function() {
+        const useOptionsCheckbox = document.getElementById('useOptions');
+        toggleOptionArea(useOptionsCheckbox);
+
+        // 체크박스 변경 이벤트 바인딩
+        useOptionsCheckbox.addEventListener('change', function() {
+            toggleOptionArea(this);
+        });
+    });
+
+    function toggleOptionArea(checkbox) {
+        const optionArea = document.getElementById('optionArea');
+        const stockInput = document.getElementById('totalStock');
+
+        if (checkbox.checked) {
+            // 옵션 사용 시
+            optionArea.style.display = 'block';
+            stockInput.value = 0;
+            stockInput.readOnly = true; // 기본 재고칸 수정 불가 (옵션 재고가 기준이 됨)
+            stockInput.classList.add('bg-light');
+
+            // 옵션 행이 하나도 없다면 자동으로 하나 추가
+            const optionList = document.getElementById('optionList');
+            if (optionList.children.length === 0) {
+                addOptionRow();
+            }
+        } else {
+            // 옵션 미사용 시
+            optionArea.style.display = 'none';
+            stockInput.readOnly = false; // 기본 재고칸 직접 입력 가능
+            stockInput.classList.remove('bg-light');
+
+            // 등록된 옵션 데이터 초기화 (선택 사항)
+            document.getElementById('optionList').innerHTML = '';
+        }
+    }
+
+
+    function addOptionRow() {
+        const optionList = document.getElementById('optionList');
+        // 현재 등록된 옵션 행의 개수를 인덱스로 사용
+        const index = optionList.getElementsByClassName('option-row').length;
+
+        const newRow = document.createElement('div');
+        newRow.className = 'row g-2 mb-2 align-items-center border-bottom pb-2 option-row';
+
+        // name 속성에 addItemOptionDtoList[인덱스].필드명 형식을 사용합니다.
+        // 주의: addItemDto 내부의 필드명과 일치해야 합니다. (아래 Java 예시 참고)
+            newRow.innerHTML = `
+        <div class="col-md-4">
+            <input type="text" class="form-control form-control-sm"
+                   name="addItemOptionDtoList[${index}].name" placeholder="예: 블랙 / XL" required>
+        </div>
+        <div class="col-md-3">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text">추가금</span>
+                <input type="number" class="form-control"
+                       name="addItemOptionDtoList[${index}].additionalPrice" value="0" min="0">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text">재고</span>
+                <input type="number" class="form-control"
+                       name="addItemOptionDtoList[${index}].optionStock" value="0" min="0" required>
+            </div>
+        </div>
+        <div class="col-md-2 text-end">
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeOptionRow(this)">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        `;
+
+        optionList.appendChild(newRow);
+    }
+    // 행 삭제 시 인덱스를 재정렬하는 로직이 추가되면 더 완벽합니다.
+    function removeOptionRow(btn) {
+        btn.closest('.option-row').remove();
+        reindexRows(); // 삭제 후 인덱스 다시 맞추기
+    }
+
+    function reindexRows() {
+        const rows = document.querySelectorAll('.option-row');
+        rows.forEach((row, index) => {
+            row.querySelector('input[name$=".name"]').name = `addItemOptionDtoList[${index}].name`;
+            row.querySelector('input[name$=".additionalPrice"]').name = `addItemOptionDtoList[${index}].additionalPrice`;
+            row.querySelector('input[name$=".optionStock"]').name = `addItemOptionDtoList[${index}].optionStock`;
+        });
+    }
+    // 초기 화면 로드 시 행 하나를 자동으로 추가하고 싶다면 주석 해제
+    // window.onload = addOptionRow;
+
+</script>
+
+
+</body>
+</html>

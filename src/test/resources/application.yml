@@ -1,0 +1,68 @@
+spring:
+
+  mail:
+    host: smtp.gmail.com          # 구글 SMTP 서버 주소
+    port: 587                     # 구글 SMTP 포트 번호
+    username: ${GOOGLE_MAIL_ADDRESS}  # 사용자 이메일
+    password: ${GOOGLE_MAIL_PASSWORD} # 사용자 앱 비밀번호
+    properties:
+      mail:
+        smtp:
+          auth: true              # 사용자 인증 여부
+          timeout: 5000           # 이메일 전송 타임아웃 시간
+          starttls:
+            enable: true          # TLS를 통해 안전한 통신 사용 여부
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: ${REDIS_PASSWORD}
+
+    web:
+      pageable:
+        default-page-size: 10
+        max-page-size: 100
+
+  config:
+    import: optional:file:.env[.properties]
+
+  profiles:
+    active: test
+
+
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/myshop
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        # show_sql: true
+        format_sql: true
+#        use_sql_comments: true
+
+logging.level:
+  org.hibernate.SQL: debug
+#  org.hibernate.type: trace
+
+
+solapi:
+  api-key: ${SOLAPI_API_KEY}
+  api-secret: ${SOLAPI_API_SECRET}
+  sender: ${SOLAPI_SENDER}
+
+file:
+  path: ${FILE_STORE_PATH}
+  exteral-path: ${FILE_EXTERNAL_STORE_PATH}
+
+redis:
+  ttl:
+    timeout: 20   #단위:초
+
+jwt:
+  secret: ${JWT_SECRET}

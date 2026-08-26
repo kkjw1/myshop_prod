@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>취소/반품/교환 내역 - 마이쿠팡</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* 필터 탭 스타일 */
+        .filter-tab { background: #fff; border: 1px solid #ddd; border-radius: 8px; display: flex; overflow: hidden; }
+        .filter-item { flex: 1; text-align: center; padding: 15px 0; cursor: pointer; border-right: 1px solid #eee; }
+        .filter-item:last-child { border-right: none; }
+        .filter-item.active { background-color: #4285f4; color: white; font-weight: bold; }
+
+        /* 내역 카드 스타일 */
+        .cancel-card { background: #fff; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; }
+        .cancel-card-header { padding: 15px 20px; border-bottom: 1px solid #f5f5f5; font-size: 0.9rem; color: #666; }
+
+        .status-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-bottom: 8px; }
+        .badge-cancel { background-color: #f8f9fa; color: #666; border: 1px solid #ddd; }
+        .badge-return { background-color: #fff5f5; color: #e03131; border: 1px solid #ffa8a8; }
+        .badge-complete { background-color: #e7f5ff; color: #1971c2; border: 1px solid #a5d8ff; }
+
+        .product-img { width: 80px; height: 80px; object-fit: cover; border: 1px solid #eee; }
+        .refund-info { background-color: #fcfcfc; border-top: 1px solid #f5f5f5; padding: 15px 20px; font-size: 0.9rem; }
+
+    </style>
+
+    <style th:replace="~{/member/common :: style}">
+
+        body { background-color: #f0f1f4; color: #333; }
+        .mypage-header { background-color: #fff; border-bottom: 1px solid #ddd; padding: 20px 0; }
+
+        /* 수정 폼 스타일 */
+        .edit-form-container { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 40px; }
+        .form-group label { font-weight: bold; font-size: 0.9rem; color: #555; }
+        .form-control:focus { border-color: #4285f4; box-shadow: 0 0 0 0.2rem rgba(66, 133, 244, 0.1); }
+
+        .readonly-input { background-color: #f8f9fa !important; cursor: not-allowed; }
+        .btn-update { background-color: #4285f4; color: white; font-weight: bold; height: 50px; font-size: 1.1rem; }
+        .btn-update:hover { background-color: #357abd; color: white; }
+        .required-mark { color: #ae0000; margin-left: 2px; }
+
+        .input-error {
+            border-color: #dc3545 !important;
+            color: #dc3545;
+        }
+
+        /* 최상단 유틸리티 바 (로그인/회원가입) */
+        .top-utility-bar {
+            font-size: 12px;
+            padding: 5px 0;
+        }
+        .top-utility-bar a {
+            color: #555;
+            margin-left: 15px;
+            text-decoration: none;
+        }
+        .top-utility-bar a:hover {
+            text-decoration: underline;
+        }
+
+        /* 헤더 스타일 커스텀 */
+        .navbar { padding: 15px 0; }
+        .navbar-brand { font-weight: bold; color: #4285f4 !important; font-size: 2rem; margin-right: 30px; }
+
+        /* 검색바 스타일 */
+        .search-container {
+            flex-grow: 1;          /* 가용 공간을 모두 차지하도록 설정 */
+            max-width: 800px;      /* 최대 길이를 800px로 제한 */
+            margin: 0 20px;
+        }
+        .search-input {
+            height: 48px;          /* 검색창 높이를 키움 */
+            border: 2px solid #4285f4;
+            border-right: none;    /* 버튼과 붙이기 위해 오른쪽 테두리 제거 */
+        }
+        .search-btn {
+            width: 70px;
+            background-color: #4285f4;
+            border: 2px solid #4285f4;
+            color: white;
+            font-weight: bold;
+        }
+        .search-input:focus {
+            box-shadow: none;
+            border-color: #4285f4;
+        }
+
+        /* 마우스 호버 시 드롭다운 열기 */
+        .my-coupang-dropdown:hover .dropdown-menu {
+            display: block;
+            margin-top: 0; /* 부드러운 연결을 위해 여백 제거 */
+        }
+
+        /* 드롭다운 애니메이션*/
+        .dropdown-menu {
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 1px solid #ddd;
+            animation: fadeIn 0.2s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer { background: #333; color: white; padding: 40px 0; margin-top: 50px; }
+        /* 푸터 전체 배경 및 폰트 설정 */
+        .shop-footer {
+            background-color: #fafafa;
+            border-top: 1px solid #e4e4e4;
+            color: #555;
+            font-size: 13px;
+            padding-top: 40px;
+            padding-bottom: 60px;
+        }
+
+        /* 고객센터 강조 섹션 */
+        .footer-cs {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 30px;
+            margin-bottom: 30px;
+        }
+        .cs-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* 메뉴 링크 스타일 */
+        .footer-links a {
+            color: #555;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+        .footer-links a:hover {
+            color: #4285f4;
+            text-decoration: underline;
+        }
+
+        /* 법적 고지사항 및 사업자 정보 */
+        .company-info {
+            line-height: 1.8;
+            color: #777;
+        }
+        .footer-bottom-text {
+            font-size: 11px;
+            color: #999;
+            margin-top: 20px;
+        }
+
+        /* 소셜/앱 다운로드 아이콘 */
+        .footer-icons img {
+            width: 32px;
+            height: 32px;
+            margin-left: 10px;
+            filter: grayscale(100%);
+            opacity: 0.6;
+        }
+        .footer-icons img:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+        }
+
+        /* 사이드 메뉴 */
+        .side-menu { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 15px 0; }
+        .side-menu a { display: block; padding: 10px 20px; color: #555; text-decoration: none; font-size: 14px; }
+        .side-menu a.active { color: #4285f4; font-weight: bold; background-color: #f0f7ff; border-right: 4px solid #4285f4; }
+
+
+        /* 배송지 카드 */
+        .address-card { background: #fff; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; transition: 0.2s; }
+        .address-card.default { border: 2px solid #4285f4; }
+        .badge-default { background-color: #4285f4; color: white; font-size: 11px; padding: 3px 8px; border-radius: 12px; }
+
+        .address-name { font-weight: bold; font-size: 1.1rem; }
+        .address-detail { color: #666; font-size: 0.95rem; line-height: 1.6; }
+
+        .btn-add-address { border: 1px solid #4285f4; color: #4285f4; font-weight: bold; padding: 10px 0; }
+        .btn-add-address:hover { background-color: #f0f7ff; }
+
+        .action-links a { font-size: 13px; color: #777; margin-left: 15px; text-decoration: none; }
+        .action-links a:hover { color: #333; }
+
+        /* 이전 버튼 스타일 */
+        .btn-prev { border: 1px solid #ccc; color: #333; font-weight: bold; height: 50px; font-size: 1.1rem; }
+        .btn-update { background-color: #4285f4; color: white; font-weight: bold; height: 50px; font-size: 1.1rem; }
+
+    </style>
+</head>
+<body>
+
+
+<div class="mypage-header mb-4 text-center" th:replace="~{/member/common :: header}">
+    <div class="container">
+        <div class="top-utility-bar">
+            <div class="container d-flex justify-content-end" th:unless="${isLogin}">
+                <a href="#" th:href="@{/login}">로그인</a>
+                <a href="#" th:href="@{/signup}">회원가입</a>
+                <a href="#" th:href="@{/seller}">판매자 페이지</a>
+            </div>
+            <div class="container d-flex justify-content-end" th:if="${isLogin}">
+                <a th:text="|${loginCheckMemberDto.getName()} 님|" th:href="@{/myPage/memberModify(memberId=${loginCheckMemberDto.getId()})}">닉네임</a>
+                <form id="logoutForm" th:action="@{/logout(memberId=${loginCheckMemberDto.getId()})}" method="post">
+                    <a href="javascript:void(0);" onclick="document.getElementById('logoutForm').submit();">로그아웃</a>
+                </form>
+                <a href="#" th:href="@{/seller}">판매자 페이지</a>
+            </div>
+        </div>
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+            <div class="container">
+                <a class="navbar-brand" href="#" th:href="@{/home}" th:text="#{shop.title}">타이틀</a>
+
+                <div class="search-container d-none d-md-block">
+                    <form action="/search" method="get">
+                        <div class="input-group">
+                            <input type="text" class="form-control search-input" placeholder="찾고 싶은 상품을 검색하세요!">
+                            <div class="input-group-append">
+                                <button class="btn search-btn" type="submit">검색</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="text-center mx-2 dropdown my-coupang-dropdown" style="cursor:pointer;">
+                    <div id="mypageMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link mx-2" href="#">마이숍</a>
+                    </div>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="mypageMenu">
+                        <a class="dropdown-item" href="#" th:href="@{/myPage/orderList}">주문 목록</a>
+                        <a class="dropdown-item" href="#" th:href="@{/myPage/cancel_return_list}">취소/반품</a>
+                    </div>
+                </div>
+                <a class="nav-link mx-2" href="#" th:href="@{/myPage/cart}">장바구니</a>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="side-menu shadow-sm mb-4">
+                <div class="px-3 mb-2"><h5 class="font-weight-bold small text-muted">MY 쇼핑</h5></div>
+                <a href="#" th:href="@{/myPage/orderList}">주문 목록/배송 조회</a>
+                <a href="#" class="active" th:href="@{/myPage/cancel_return_list}">취소/반품 내역</a>
+                <a href="#" th:href="@{/myPage/cart}">장바구니 관리</a>
+                <a href="#" th:href="@{/myPage/inquiry}">문의내역 확인</a>
+                <hr>
+                <div class="px-3 mb-3"><h5 class="font-weight-bold">MY 정보</h5></div>
+                <a href="#" th:href="@{/myPage/memberModify}">개인정보 확인/수정</a>
+                <a href="#" th:href="@{/myPage/addressManage}">배송지 관리</a>
+            </div>
+        </div>
+
+        <div class="col-md-9" th:with="cancelCount=${#lists.size(cancelReturnList.?[cancelReasonCode != null])},
+                                returnCount=${#lists.size(cancelReturnList.?[returnReasonCode != null])}">
+            <h4 class="mb-4 font-weight-bold">취소/반품 내역</h4>
+
+            <div class="filter-tab mb-4 shadow-sm" id="filterTab">
+                <div class="filter-item active" data-filter="all">전체</div>
+                <div class="filter-item" data-filter="cancel" th:text="|취소 (${cancelCount})|">취소 (0)</div>
+                <div class="filter-item" data-filter="return" th:text="|반품 (${returnCount})|">반품 (0)</div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(cancelReturnList)}" class="text-center py-5 text-muted">
+                취소/반품 내역이 존재하지 않습니다.
+            </div>
+
+            <div th:each="dto : ${cancelReturnList}"
+                 class="cancel-card shadow-sm order-item-card"
+                 th:data-type="${dto.cancelReasonCode != null ? 'cancel' : 'return'}">
+
+                <div class="cancel-card-header d-flex justify-content-between">
+                    <span th:text="|주문상품번호: ${dto.orderItemNo}|">주문상품번호: 0</span>
+                    <span th:text="|${#temporals.format(dto.requestTime, 'yyyy.MM.dd')} 접수|">2026.07.01 접수</span>
+                </div>
+
+                <div class="p-4">
+                    <div class="row">
+                        <div class="col-md-2 text-center">
+                            <img src="https://via.placeholder.com/80" th:src="${dto.imageUrl}" class="product-img" alt="상품 이미지">
+                        </div>
+                        <div class="col-md-7">
+                            <th:block th:if="${dto.cancelReasonCode != null}">
+                                <span th:if="${#strings.toString(dto.cancelRequestStatus) == '요청'}" class="status-badge badge-cancel">취소요청</span>
+                                <span th:if="${#strings.toString(dto.cancelRequestStatus) == '승인'}" class="status-badge badge-complete">취소승인</span>
+                                <span th:if="${#strings.toString(dto.cancelRequestStatus) == '거부'}" class="status-badge badge-return">취소거부</span>
+                                <span th:if="${#strings.toString(dto.cancelRequestStatus) == '완료'}" class="status-badge badge-cancel">결제취소 완료</span>
+                            </th:block>
+
+                            <th:block th:if="${dto.returnReasonCode != null}">
+                                <span th:if="${#strings.toString(dto.returnRequestStatus) == '요청'}" class="status-badge badge-complete">반품요청</span>
+                                <span th:if="${#strings.toString(dto.returnRequestStatus) == '픽업예정' || #strings.toString(dto.returnRequestStatus) == '픽업완료'}" class="status-badge badge-complete">수거진행중</span>
+                                <span th:if="${#strings.toString(dto.returnRequestStatus) == '검사중'}" class="status-badge badge-complete">품질검사중</span>
+                                <span th:if="${#strings.toString(dto.returnRequestStatus) == '승인'}" class="status-badge badge-complete">반품승인</span>
+                                <span th:if="${#strings.toString(dto.returnRequestStatus) == '거부'}" class="status-badge badge-return">반품거부</span>
+                                <span th:if="${#strings.toString(dto.returnRequestStatus) == '완료'}" class="status-badge badge-cancel">반품/환불완료</span>
+                            </th:block>
+
+                            <div class="font-weight-bold mb-1">
+                                <span th:text="${dto.itemName}">상품테스트3</span>
+                                <span th:if="${dto.optionName != null && !#strings.isEmpty(dto.optionName)}"
+                                      th:text="| - ${dto.optionName}|" class="text-secondary small"> - 검정색</span>
+                            </div>
+
+                            <div class="text-muted small mb-1" th:text="|수량: ${dto.count}개|">수량: 1개</div>
+
+                        </div>
+
+                        <div class="col-md-3 text-right">
+                            <button th:if="${dto.cancelReasonCode != null}"
+                                    class="btn btn-sm btn-outline-secondary btn-block btn-cancel-detail"
+                                    data-toggle="modal"
+                                    data-target="#cancelDetailModal"
+                                    th:data-order-item-no="${dto.orderItemNo}"
+                                    th:data-request-time="${#temporals.format(dto.requestTime, 'yyyy.MM.dd HH:mm')}"
+                                    th:data-item-name="${dto.itemName}"
+                                    th:data-option-name="${dto.optionName}"
+                                    th:data-count="${dto.count}"
+                                    th:data-image-url="${dto.imageUrl}"
+                                    th:data-reason-code="${dto.cancelReasonCode}"
+                                    th:data-reason-detail="${dto.reasonDetail}"
+                                    th:data-status="${dto.cancelRequestStatus}"
+                                    th:data-price="${#numbers.formatDecimal(dto.price, 0, 'COMMA', 0, 'POINT') + '원'}">
+                                취소 상세
+                            </button>
+
+                            <button
+                                    class="btn btn-sm btn-outline-secondary btn-block btn-inquiry-detail"
+                                    data-toggle="modal"
+                                    data-target="#inquiryModal"
+                                    th:data-order-item-no="${dto.orderItemNo}"
+                                    th:data-item-name="${dto.itemName}"
+                                    th:data-option-name="${dto.optionName}"
+                                    th:data-image-url="${dto.imageUrl}"
+                                    th:data-member-no="${loginCheckMemberDto.no}"
+                                    th:data-item-no="${dto.itemNo}"
+
+                            >
+                                문의하기
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="refund-info">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">환불 예정 금액</span>
+                        <span class="font-weight-bold text-danger"
+                              th:text="|${#numbers.formatDecimal(dto.price, 0, 'COMMA', 0, 'POINT')}원|">1,500,000원</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!--문의 하기 모달-->
+<div class="modal fade" id="inquiryModal" tabindex="-1" aria-labelledby="inquiryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px; border: none; overflow: hidden;">
+            <div class="modal-header bg-light" style="border-bottom: 1px solid #eee;">
+                <h5 class="modal-title font-weight-bold" id="inquiryModalLabel" style="font-size: 1.1rem; color: #333;">1:1 문의하기</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="inquiryForm" th:action="@{/myPage/inquiry}" method="post">
+
+                <input type="hidden" id="inquiryItemNo" name="itemNo">
+                <input type="hidden" id="inquiryOrderItemNo" name="orderItemNo">
+                <input type="hidden" id="inquiryMemberNo" name="memberNo">
+                <input type="hidden" id="inquiryOptionName" name="optionName">
+
+                <div class="modal-body p-4">
+                    <div class="d-flex align-items-center mb-4 p-2" style="border-bottom: 1px solid #f5f5f5;">
+                        <img id="inquiryModalImg" src="https://via.placeholder.com/50" class="product-img mr-3" style="width: 50px; height: 50px; border-radius: 4px;">
+                        <div>
+                            <div id="inquiryModalItemName" class="font-weight-bold text-dark small">상품명</div>
+                            <div id="inquiryModalOrderNo" class="text-muted extra-small" style="font-size: 11px;">주문상품번호: </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="inquiryType" class="font-weight-bold small text-dark">문의 유형 <span class="required-mark">*</span></label>
+                        <select class="form-control" id="inquiryType" name="inquiryCategory" required style="height: 45px; font-size: 0.9rem; border-radius: 6px;">
+                            <option value="" disabled selected hidden>문의 유형을 선택해주세요</option>
+                            <option th:each="category : ${T(myshop.shop.entity.inquiry.InquiryCategory).values()}"
+                                    th:value="${category.name()}"
+                                    th:text="${category.description}">
+                                상품 반품 문의
+                            </option>
+                        </select>
+                    </div>
+
+
+                    <div class="form-group mb-3">
+                        <label for="inquiryTitle" class="font-weight-bold small text-dark">제목 <span class="required-mark">*</span></label>
+                        <input type="text" class="form-control" id="inquiryTitle" name="title" placeholder="제목을 입력해주세요." required style="height: 45px; font-size: 0.9rem; border-radius: 6px;">
+                    </div>
+
+
+                    <div class="form-group mb-2">
+                        <label for="inquiryContent" class="font-weight-bold small text-dark">문의 내용 <span class="required-mark">*</span></label>
+                        <textarea class="form-control" id="inquiryContent" name="content" rows="5" placeholder="문의하실 내용을 입력해주세요. (최대 500자)" required style="font-size: 0.9rem; border-radius: 6px; resize: none;"></textarea>
+                    </div>
+                    <div class="text-right text-muted" style="font-size: 11px;">
+                        <span id="charCount">0</span>/500자
+                    </div>
+                </div>
+                <div class="modal-footer p-3" style="border-top: 1px solid #eee; background-color: #fcfcfc;">
+                    <div class="row w-100 m-0">
+                        <div class="col-6 pl-0 pr-1">
+                            <button type="button" class="btn btn-prev btn-block" data-dismiss="modal" style="height: 45px; font-size: 0.95rem; border-radius: 6px;">취소</button>
+                        </div>
+                        <div class="col-6 pr-0 pl-1">
+                            <button type="submit" class="btn btn-update btn-block m-0" style="height: 45px; font-size: 0.95rem; border-radius: 6px;">문의 등록</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<!--취소상세 모달-->
+<div class="modal fade" id="cancelDetailModal" tabindex="-1" aria-labelledby="cancelDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px; border: none; overflow: hidden;">
+            <div class="modal-header bg-light" style="border-bottom: 1px solid #eee;">
+                <h5 class="modal-title font-weight-bold" id="cancelDetailModalLabel" style="font-size: 1.1rem; color: #333;">취소 상세 내역</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="d-flex justify-content-between mb-3 pb-3" style="border-bottom: 1px solid #f5f5f5; font-size: 0.9rem; color: #666;">
+                    <span>주문상품번호: <strong id="cancelModalOrderNo" class="text-dark"></strong></span>
+                    <span>접수일시: <span id="cancelModalRequestTime"></span></span>
+                </div>
+
+                <div class="d-flex align-items-center mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                    <img id="cancelModalImg" src="https://via.placeholder.com/60" class="product-img mr-3" style="width: 60px; height: 60px; border-radius: 4px;">
+                    <div class="flex-grow-1">
+                        <div id="cancelModalItemName" class="font-weight-bold text-dark" style="font-size: 0.95rem;">상품명</div>
+                        <div id="cancelModalCount" class="text-muted small mt-1">수량: 0개</div>
+                    </div>
+                </div>
+
+                <div class="px-1">
+                    <table class="table table-sm table-borderless mb-0" style="font-size: 0.95rem;">
+                        <tr style="border-bottom: 1px solid #f9f9f9;">
+                            <td class="text-muted pl-0 py-2" style="width: 30%;">취소 사유</td>
+                            <td>
+                                <span id="cancelModalReasonCode" class="text-dark font-weight-bold"></span>
+                                <div id="cancelModalReasonDetail" class="text-muted small mt-1" style="display:none;"></div>
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f9f9f9;">
+                            <td class="text-muted pl-0 py-2">처리 상태</td>
+                            <td class="py-2"><span id="cancelModalStatusBadge" class="badge px-2 py-1">요청</span></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted pl-0 py-3 align-middle">환불 금액</td>
+                            <td id="cancelModalPrice" class="text-danger font-weight-bold py-3 align-middle" style="font-size: 1.2rem;">0원</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid #eee; background-color: #fcfcfc;">
+                <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal" style="font-size: 0.95rem; font-weight: bold; height: 45px; border-radius: 6px;">확인</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<footer class="shop-footer" th:replace="~{/shop/common::footer}">
+    <div class="container">
+        <div class="row footer-cs align-items-center">
+            <div class="col-md-4">
+                <p class="mb-1 font-weight-bold">고객센터</p>
+                <div class="cs-number">1577-1234</div>
+                <p class="mb-0 text-muted small">365일 24시간 운영 (유료전화)</p>
+            </div>
+            <div class="col-md-8 text-md-right mt-3 mt-md-0">
+                <div class="footer-links font-weight-bold">
+                    <a href="#">회사소개</a>
+                    <a href="#">이용약관</a>
+                    <a href="#" class="text-primary">개인정보처리방침</a>
+                    <a href="#">입점문의</a>
+                    <a href="#">광고문의</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row company-info">
+            <div class="col-md-9">
+                <div class="mb-2">
+                    <strong>(주)마이숍(MYSHOP)</strong> | 대표이사: 홍길동 | 서울특별시 강남구 테헤란로 123
+                </div>
+                <div class="mb-2">
+                    사업자등록번호: 123-45-67890 | 통신판매업신고: 2026-서울강남-0123호 | <a href="#" class="text-dark"><u>사업자정보확인</u></a>
+                </div>
+                <div class="mb-2">
+                    호스팅 서비스 사업자: Amazon Web Services (AWS) | 개인정보보호책임자: 김철수
+                </div>
+                <div class="footer-bottom-text">
+                    우리은행 채무지급보증 안내: 고객님께서 결제하신 현금에 대해 우리은행과 채무지급보증 계약을 체결하여 안전거래를 보장하고 있습니다.
+                </div>
+            </div>
+
+            <div class="col-md-3 text-md-right mt-4 mt-md-0">
+                <div class="footer-icons">
+                    <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/174/174848.png" alt="FB"></a>
+                    <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" alt="IG"></a>
+                    <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/732/732208.png" alt="App Store"></a>
+                    <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/888/888857.png" alt="Google Play"></a>
+                </div>
+                <p class="mt-3 small text-muted font-italic">Copyright © MYSHOP Inc. 2026 All Rights Reserved.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+<script th:inline="javascript">
+    $(document).ready(function() {
+        // 기존 필터 탭 코드 유지
+        $('#filterTab .filter-item').on('click', function() {
+            $('#filterTab .filter-item').removeClass('active');
+            $(this).addClass('active');
+            var filterValue = $(this).data('filter');
+            if (filterValue === 'all') { $('.order-item-card').show(); }
+            else { $('.order-item-card').hide(); $('.order-item-card[data-type="' + filterValue + '"]').show(); }
+        });
+
+        // ================= 취소 사유 및 상태 매핑 데이터 정의 =================
+        var cancelReasonMap = {
+            'CHANGED_MIND': '단순 변심 (의사 취소)',
+            'WRONG_ORDER': '주문 실수 (옵션/수량 잘못 선택)',
+            'DELIVERY_DELAY': '배송 지연 우려',
+            'PRICE_FALL': '더 저렴한 상품 발견',
+            'OTHER': '기타'
+        };
+
+        var cancelStatusMap = {
+            '요청': { text: '취소 요청', class: 'badge-complete' },
+            '승인': { text: '취소 승인', class: 'badge-complete' },
+            '거부': { text: '취소 거부', class: 'badge-return' },
+            '완료': { text: '결제취소 완료', class: 'badge-cancel' }
+        };
+
+        // 취소 상세 버튼 클릭 이벤트
+        $('.btn-cancel-detail').on('click', function() {
+            var orderItemNo = $(this).attr('data-order-item-no');
+            var requestTime = $(this).attr('data-request-time');
+            var itemName = $(this).attr('data-item-name');
+            var optionName = $(this).attr('data-option-name');
+            var count = $(this).attr('data-count');
+            var imageUrl = $(this).attr('data-image-url');
+            var reasonCode = $(this).attr('data-reason-code');
+            var reasonDetail = $(this).attr('data-reason-detail');
+            var status = $(this).attr('data-status');
+            var price = $(this).attr('data-price');
+
+            // 1. 상품명 조합
+            var fullItemName = itemName;
+            if(optionName && optionName.trim() !== '') {
+                fullItemName += ' (옵션: ' + optionName + ')';
+            }
+            $('#cancelModalItemName').text(fullItemName);
+            $('#cancelModalOrderNo').text(orderItemNo);
+            $('#cancelModalRequestTime').text(requestTime);
+            $('#cancelModalCount').text('수량: ' + count + '개');
+            $('#cancelModalPrice').text(price);
+
+            // 2. 취소 사유 코드 한국어 매핑 및 상세 사유 노출
+            var koreanReason = cancelReasonMap[reasonCode] || '기타';
+            $('#cancelModalReasonCode').text(koreanReason);
+
+            if(reasonDetail && reasonDetail.trim() !== '') {
+                // 단순 코드 외에 직접 적은 상세 내용이 있을 경우 하단에 추가 노출
+                $('#cancelModalReasonDetail').text('상세내용: ' + reasonDetail).show();
+            } else {
+                $('#cancelModalReasonDetail').hide();
+            }
+
+            // 3. 처리 상태 배지 맵 연동
+            var statusInfo = cancelStatusMap[status] || { text: status, class: 'badge-cancel' };
+            $('#cancelModalStatusBadge')
+                .text(statusInfo.text)
+                .removeClass('badge-cancel badge-complete badge-return')
+                .addClass(statusInfo.class);
+
+            // 4. 이미지 바인딩
+            if(imageUrl) { $('#cancelModalImg').attr('src', imageUrl); }
+            else { $('#cancelModalImg').attr('src', 'https://via.placeholder.com/60'); }
+        });
+
+        // 문의하기 버튼 클릭 이벤트 및 글자수 세기 유지
+        $('.btn-inquiry-detail').on('click', function() {
+            var orderItemNo = $(this).attr('data-order-item-no');
+            var itemName = $(this).attr('data-item-name');
+            var optionName = $(this).attr('data-option-name');
+            var imageUrl = $(this).attr('data-image-url');
+            var memberNo = $(this).attr('data-member-no');
+            var itemNo = $(this).attr('data-item-no');
+
+            var fullItemName = itemName;
+            if (optionName && optionName.trim() !== '') {
+                fullItemName += ' - ' + optionName;
+            }
+
+            $('#inquiryOrderItemNo').val(orderItemNo);
+            $('#inquiryModalOrderNo').text('주문상품번호: ' + orderItemNo);
+            $('#inquiryModalItemName').text(fullItemName);
+
+            if (imageUrl) {
+                $('#inquiryModalImg').attr('src', imageUrl);
+            } else {
+                $('#inquiryModalImg').attr('src', 'https://via.placeholder.com/50');
+            }
+
+            $('#inquiryType').val('');
+            $('#inquiryContent').val('');
+            $('#charCount').text('0');
+
+
+            $('#inquiryMemberNo').val(memberNo);
+            $('#inquiryOptionName').val(optionName);
+            $('#inquiryItemNo').val(itemNo);
+        });
+
+
+
+        $('#inquiryContent').on('input', function() {
+            var content = $(this).val();
+            if(content.length > 500) { $(this).val(content.substring(0, 500)); content = $(this).val(); }
+            $('#charCount').text(content.length);
+        });
+    });
+</script>
+
+
+</body>
+</html>

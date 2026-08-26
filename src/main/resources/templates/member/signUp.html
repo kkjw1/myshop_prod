@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 페이지</title>
+    <link rel="stylesheet"  th:href="@{/css/bootstrap.min.css}" href="../css/bootstrap.min.css">
+
+    <style>
+        html, body {
+            /* 높이 고정보다는 내용에 따라 늘어나도록 설정 */
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px 0;
+            background-color: #f8f9fa;
+        }
+        .register-container {
+            width: 95%;
+            margin: 0 auto;
+            padding: 40px 50px;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,.05);
+            background-color: #fff;
+        }
+
+        .input-error {
+            border-color: #dc3545 !important;
+            color: #dc3545;
+        }
+
+
+        /* 레이블과 입력창 사이의 간격 조정 */
+        .form-group {
+            margin-bottom: 25px; /* 필드 간의 간격을 넓힘 */
+        }
+
+
+        .form-control, .custom-select {
+            height: 50px; /* 입력창 높이를 키워 터치/클릭이 편하게 조정 */
+            border-radius: 6px;
+        }
+
+        /* 성별 선택 버튼 디자인 개선 */
+        .gender-group {
+            display: flex;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #ced4da;
+        }
+
+        .gender-btn {
+            flex: 1;
+            border: none;
+            background: #fff;
+            padding: 12px 0;
+            font-size: 15px;
+            color: #495057;
+            border-right: 1px solid #dee2e6;
+            transition: all 0.2s;
+        }
+
+        .gender-btn:last-child {
+            border-right: none;
+        }
+
+        .gender-btn.active {
+            background-color: #f0f7ff;
+            color: #007bff;
+            font-weight: 700;
+            box-shadow: inset 0 0 0 1px #007bff;
+        }
+
+        .gender-group {
+            display: flex;
+            border-top: 1px solid #dee2e6;
+            border-bottom: 1px solid #dee2e6;
+            border-left: 1px solid #dee2e6;
+            border-right: 1px solid #dee2e6;
+        }
+
+        /* 로고와 컨테이너를 감싸는 래퍼 */
+        .register-wrapper {
+            width: 100%;
+            max-width: 650px;
+        }
+
+        .register-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .register-logo img {
+            max-width: 180px;
+            height: auto;
+        }
+
+        .register-logo a {
+            font-size: 2.2rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: #0d6efd; /* 텍스트 로고일 경우의 색상 */
+        }
+
+
+        /* 모달 본문 텍스트 스타일 */
+        .modal-body {
+            background-color: #fcfcfc;
+            color: #444;
+        }
+        .modal-header {
+            background-color: #f8f9fa;
+        }
+
+    </style>
+</head>
+
+<body class="d-flex justify-content-center align-items-start bg-light">
+<div class="register-wrapper">
+    <div class="register-logo">
+        <a th:href="@{/}" th:text="#{shop.title}">
+            MYSHOP
+        </a>
+    </div>
+
+    <div class="register-container">
+        <h3 class="text-center mb-4">회원가입</h3>
+
+        <form action="login.html" th:action="@{/signUp}" method="post" th:object="${signUpMemberDto}">
+
+            <div class="text-danger" style="font-size: 0.875rem;" th:errors="*{id}">아이디 에러</div>
+            <div class="text-danger" style="font-size: 0.875rem;" th:errors="*{password}">비밀번호 에러</div>
+            <div class="text-danger" style="font-size: 0.875rem;" th:errors="*{email}">이메일 에러</div>
+            <div class="text-danger" style="font-size: 0.875rem;" th:errors="*{name}">이름 에러</div>
+            <div class="text-danger" style="font-size: 0.875rem;" th:errors="*{gender}">성별 에러</div>
+            <div class="text-danger" style="font-size: 0.875rem;" th:errors="*{telecom}">통신사 에러</div>
+            <div class="text-danger" style="font-size: 0.875rem;" th:errors="*{phoneNumber}">휴대전화번호 에러</div>
+
+            <div class="text-danger" style="font-size: 0.875rem;" id="duplicatedId"></div>
+            <div class="text-danger" style="font-size: 0.875rem;" id="duplicatedEmail"></div>
+            <div class="text-danger" style="font-size: 0.875rem;" id="phoneCheck"></div>
+
+            <div class="text-danger mb-3" id="loginErrorMessage" style="font-size: 0.875rem;" th:if="${#fields.hasGlobalErrors()}"
+                 th:each="err : ${#fields.globalErrors()}" th:text="${err}">
+                회원가입 실패
+            </div>
+
+            <div class="form-group">
+                <label>아이디</label>
+                <input type="text" class="form-control" id="id" placeholder="아이디" th:field="*{id}" th:errorclass="input-error" onblur="checkDuplicateId()">
+            </div>
+
+            <label>비밀번호</label>
+            <div class="input-group border-bottom form-group">
+                <input type="password" class="form-control" id="password" placeholder="최소 8자 이상의 비밀번호" th:field="*{password}" th:errorclass="input-error">
+                <span class="input-group-text eye-btn" id="toggleText" onclick="togglePassword()">보기</span>
+            </div>
+
+            <div class="form-group">
+                <label>이메일</label>
+                <input type="text" class="form-control" id="email" placeholder="[선택]이메일주소(본인 확인용)" th:field="*{email}" th:errorclass="input-error" onblur="checkDuplicateEmail()">
+            </div>
+
+            <div class="form-group">
+                <label>이름</label>
+                <input type="text" class="form-control" id="name" placeholder="이름" th:field="*{name}" th:errorclass="input-error">
+            </div>
+
+            <div class="form-group">
+                <label>성별</label>
+                <input type="hidden" th:field="*{gender}" id="gender">
+                <div class="gender-group">
+                    <button type="button" class="gender-btn" onclick="selectGender(this, 'MAN')">남자</button>
+                    <button type="button" class="gender-btn" onclick="selectGender(this, 'WOMAN')">여자</button>
+                    <button type="button" class="gender-btn" onclick="selectGender(this, 'NONE')">선택안함</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>통신사</label>
+                <select class="custom-select" th:field="*{telecom}" id="telecom" th:errorclass="input-error">
+                    <option value="">통신사</option>
+                    <option value="SKT">SKT</option>
+                    <option value="KT">KT</option>
+                    <option value="LG U+">LG U+</option>
+                    <option value="SKT알뜰폰">SKT알뜰폰</option>
+                    <option value="KT알뜰폰">KT알뜰폰</option>
+                    <option value="LG U+알뜰폰">LG U+알뜰폰</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>휴대전화번호</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="phoneNumber" placeholder="010-XXXX-XXXX" th:field="*{phoneNumber}" th:errorclass="input-error" oninput="formatPhoneNumber(this)">
+                    <button type="button" class="btn btn-outline-secondary" id="sendSmsBtn" onclick="sendSmsAuth()">인증번호 받기</button>
+                </div>
+            </div>
+
+            <div class="form-group" id="verificationCodeGroup" style="display: none;">
+                <label>인증번호</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="authCode" placeholder="인증번호 6자리 입력">
+                    <span class="input-group-text text-danger" id="timer">03:00</span>
+                    <button type="button" class="btn btn-primary" onclick="checkAuthCode()">확인</button>
+                </div>
+                <small id="authMsg" class="form-text"></small>
+            </div>
+
+
+            <div class="form-group form-check mb-4 mt-3">
+                <input type="checkbox" class="form-check-input" id="termsAgree" onchange="toggleSignupButton()">
+                <label class="form-check-label" for="termsAgree">
+                    <a href="javascript:void(0)" class="text-primary text-decoration-none"
+                       data-bs-toggle="modal" data-bs-target="#termsModal">
+                        이용약관 및 개인정보 처리방침
+                    </a>에 동의합니다.
+                </label>
+            </div>
+
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary w-100" style="padding: 10px;" id="signupButton" disabled>
+                    회원가입
+                </button>
+            </div>
+
+            <hr>
+
+            <div class="text-center mt-3">
+                이미 계정이 있으신가요?
+                <a href="#" onclick="location.href='login.html'" class="text-decoration-none text-primary"
+                th:onclick="|location.href='@{/login}'|">로그인</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">이용약관 및 개인정보 처리방침</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="font-size: 0.9rem; line-height: 1.6;">
+                <h6>제 1 조 (목적)</h6>
+                <p>이 약관은 MYSHOP이 운영하는 사이트에서 제공하는 서비스의 이용조건 및 절차에 관한 사항을 규정함을 목적으로 합니다.</p>
+
+                <h6>제 2 조 (개인정보 수집항목)</h6>
+                <p>회사는 회원가입 시 서비스 제공을 위해 필요한 최소한의 개인정보(이름, 이메일, 연락처 등)를 수집합니다.</p>
+
+                <h6>제 3 조 (개인정보의 보유 및 이용기간)</h6>
+                <p>수집된 개인정보는 회원 탈퇴 시까지 보유하며, 관련 법령에 규정이 있는 경우 해당 기간 동안 보관합니다.</p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal"
+                        onclick="document.getElementById('termsAgree').checked = true; toggleSignupButton();">확인 및 동의</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script th:inline="javascript">
+
+    function toggleSignupButton() {
+        const termsAgree = document.getElementById('termsAgree');
+        const signupButton = document.getElementById('signupButton');
+
+        // 체크박스가 체크되어 있으면 disabled를 false로, 아니면 true로 설정
+        signupButton.disabled = !termsAgree.checked;
+    }
+
+    function formatPhoneNumber(input) {
+        // 1. 숫자만 남기기
+        let value = input.value.replace(/[^0-9]/g, "");
+
+        // 2. 길이에 따라 하이픈 삽입
+        let result = "";
+        if (value.length < 4) {
+            result = value;
+        } else if (value.length < 8) {
+            result = value.replace(/(\d{3})(\d{1,4})/, "$1-$2");
+        } else {
+            result = value.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1-$2-$3");
+        }
+
+        // 3. 값 반영
+        input.value = result;
+    }
+
+    async function sendSmsAuth() {
+        const phoneNumberVal = document.getElementById('phoneNumber').value;
+        const phoneNumber = document.getElementById('phoneNumber');
+        const msg = document.getElementById('phoneCheck');
+
+        if (!phoneNumberVal) {
+            alert("핸드폰 번호를 입력해주세요.");
+            return;
+        }
+
+        try {
+            const checkPhoneNumber = await fetch(`/checkPhoneNumber?phoneNumber=${phoneNumberVal}`);
+            const isAvailable = await checkPhoneNumber.json();
+
+            // 사용중인 번호
+            if(!isAvailable) {
+                msg.innerText = "사용 중인 핸드폰입니다."
+                phoneNumber.classList.add("input-error");
+                return;
+            } else {
+                msg.innerText = "";
+                phoneNumber.classList.remove("input-error");
+            }
+
+            const sendSmsAuth = await fetch('/sendSmsAuth',{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phoneNumber: phoneNumberVal }) // 본문에 담아 보냄
+            });
+
+            const sendSmsAuthText = await sendSmsAuth.text();
+
+            if (sendSmsAuthText === "ok") {
+                alert("인증번호가 발송되었습니다.");
+                document.getElementById('verificationCodeGroup').style.display = 'block';
+                startTimer(180); // 180초
+            } else {
+                alert(`sendSmsAuthText:${sendSmsAuthText}`);
+                throw new Error("인증번호 발송 실패");
+            }
+
+        } catch (err) {
+            console.error("checkPhoneNumber Error:", err);
+            alert("서버 통신 중 오류가 발생했습니다.");
+        }
+    }
+
+    let timerInterval;
+
+    function startTimer(duration) {
+        let timer = duration, minutes, seconds;
+        const display = document.getElementById('timer');
+        const sendBtn = document.getElementById('sendSmsBtn');
+
+        // 기존 타이머가 있다면 초기화
+        clearInterval(timerInterval);
+
+        sendBtn.innerText = "재발송";
+
+        timerInterval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                clearInterval(timerInterval);
+                display.textContent = "시간만료";
+                alert("인증 시간이 만료되었습니다. 다시 시도해주세요.");
+                // 만료 시 처리 (예: 확인 버튼 비활성화 등)
+            }
+        }, 1000);
+    }
+
+    async function checkAuthCode() {
+        const authCode = document.getElementById('authCode').value;
+        const phoneNumber = document.getElementById('phoneNumber').value;
+        const msg = document.getElementById('authMsg');
+
+        if (authCode === "") {
+            alert("인증번호를 입력해주세요.");
+            return;
+        }
+
+        const checkAuthCode = await fetch('/checkAuthCode', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({authCode: authCode, phoneNumber: phoneNumber}) // 본문에 담아 보냄
+        });
+
+        const checkAuthCodeResult = await checkAuthCode.text();
+
+        if (checkAuthCodeResult === "ok") {
+            clearInterval(timerInterval);
+            document.getElementById('timer').textContent = "";
+            msg.innerText = "인증이 완료되었습니다.";
+            msg.style.color = "green";
+            document.getElementById('verificationCode').readOnly = true;
+            document.getElementById('phoneNumber').readOnly = true;
+            // document.getElementById('verificationCodeGroup').classList.add('d-none');
+        } else {
+            msg.innerText = "인증번호가 일치하지 않습니다.";
+            msg.style.color = "red";
+        }
+    }
+
+
+    function checkDuplicateEmail() {
+        const email = document.getElementById('email');
+        const emailVal = email.value;
+        const msg = document.getElementById('duplicatedEmail');
+        const button = document.getElementById('signupButton');
+
+        if (emailVal === "") {
+            msg.innerText = "";
+            email.classList.remove("input-error");
+            button.disabled = false;
+            return;
+        }
+        fetch(`/checkEmail?email=${emailVal}`)
+            .then(res => res.json())
+            .then(isAvailable => {
+                if(isAvailable) {
+                    msg.innerText = "";
+                    email.classList.remove("input-error");
+                    button.disabled = false;
+                }
+                else {
+                    msg.innerText = "이미 사용 중인 이메일입니다."
+                    email.classList.add("input-error");
+                    button.disabled = true;
+                }
+            })
+            .catch(err => console.log("checkDuplicateEmail Error:", err))
+    }
+
+
+
+    function checkDuplicateId() {
+        const id = document.getElementById('id');
+        const idVal = id.value;
+        const msg = document.getElementById('duplicatedId');
+        const button = document.getElementById('signupButton');
+
+        if (idVal === "") {
+            msg.innerText = "아이디를 입력해주세요";
+            id.classList.add("input-error");
+            button.disabled = true;
+            return;
+        }
+        fetch(`/checkId?id=${idVal}`)
+            .then(res => res.json())
+            .then(isAvailable => {
+                if(isAvailable) {
+                    msg.innerText = "";
+                    id.classList.remove("input-error");
+                    button.disabled = false;
+                }
+                else {
+                    msg.innerText = "이미 사용 중인 아이디입니다."
+                    id.classList.add("input-error");
+                    button.disabled = true;
+                }
+            })
+            .catch(err => console.log("checkDuplicateId Error:", err))
+    }
+
+    function selectGender(button, val) {
+        document.querySelectorAll('.gender-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        button.classList.add('active');
+        document.getElementById('gender').value = val;
+    }
+
+    function togglePassword() {
+        const pw = document.getElementById('password');
+        pw.type = pw.type === 'password' ? 'text' : 'password';
+
+        const toggleText = document.getElementById('toggleText');
+        if (toggleText.textContent === "보기") {
+            toggleText.textContent = "안보기";
+        } else {
+            toggleText.textContent = "보기";
+        }
+    }
+
+    function sample4_execDaumPostcode() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                var roadAddr = data.roadAddress; // 도로명 주소 변수
+                var extraRoadAddr = ''; // 참고 항목 변수
+
+                if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                    extraRoadAddr += data.bname;
+                }
+                if(data.buildingName !== '' && data.apartment === 'Y'){
+                    extraRoadAddr += (extraRoadAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                }
+                if(extraRoadAddr !== ''){
+                    extraRoadAddr = ' (' + extraRoadAddr + ')';
+                }
+
+                document.getElementById('postcode').value = data.zonecode;
+                document.getElementById("roadAddress").value = roadAddr;
+
+                var guideTextBox = document.getElementById("guide");
+
+                if(data.autoRoadAddress) {
+                    var expRoadAddr = data.autoRoadAddress + extraRoadAddr;
+                    guideTextBox.innerHTML = '(예상 도로명 주소 : ' + expRoadAddr + ')';
+                    guideTextBox.style.display = 'block';
+
+                } else {
+                    guideTextBox.innerHTML = '';
+                    guideTextBox.style.display = 'none';
+                }
+            }
+        }).open();
+    }
+</script>
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</html>

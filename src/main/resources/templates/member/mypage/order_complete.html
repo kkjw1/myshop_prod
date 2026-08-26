@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주문 상세 내역</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- FontAwesome (아이콘) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Noto Sans KR', sans-serif; }
+        .order-container { max-width: 900px; margin: 40px auto; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 24px; }
+        .order-header { background-color: #fff; padding: 40px; text-align: center; border-bottom: 1px solid #eee; border-radius: 12px 12px 0 0; }
+        .section-title { font-size: 1.1rem; font-weight: 700; color: #333; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f1f1f1; }
+        .item-img { width: 90px; height: 90px; object-fit: cover; border-radius: 8px; border: 1px solid #eee; }
+        .price-label { color: #666; }
+        .price-value { font-weight: 600; color: #333; }
+        .total-price-area { background-color: #fdfdfd; border-top: 1px dashed #ddd; }
+        .status-badge { font-size: 0.85rem; padding: 5px 12px; border-radius: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container order-container">
+    <div class="card">
+        <!-- 1. 주문 완료 메시지 (결제 직후 complete=true 파라미터가 있을 때만 표시) -->
+        <div class="order-header">
+            <div class="mb-3">
+                <i class="fas fa-check-circle text-success" style="font-size: 3.5rem;"></i>
+            </div>
+            <h2 class="font-weight-bold">주문이 완료되었습니다!</h2>
+            <p class="text-muted">고객님의 주문이 성공적으로 접수되었습니다.<br>내역은 주문 목록에서 확인하실 수 있습니다.</p>
+        </div>
+
+        <div class="card-body p-4">
+            <!-- 2. 주문 기본 정보 -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="font-weight-bold mb-1">주문 상세 내역</h4>
+                    <span class="text-muted small">주문일시: <span th:text="${#temporals.format(detailOrderDto.orderTime, 'yyyy-MM-dd HH:mm:ss')}">2026-05-13 14:30:00</span></span>
+                </div>
+                <div class="text-right">
+                    <span class="text-muted small">주문번호</span>
+                    <h5 class="font-weight-bold text-primary" th:text="${orderNo}">ORD-20260513-1004</h5>
+                </div>
+            </div>
+
+            <!-- 3. 주문 상품 목록 -->
+            <div class="section-title">주문 상품 정보</div>
+            <div th:each="detailOrderItemDto : ${detailOrderDto.detailOrderItemDtoList}" class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                <img th:src="${detailOrderItemDto.imageUrl}" src="https://via.placeholder.com/90" class="item-img" alt="상품이미지">
+                <div class="ml-3 flex-grow-1">
+                    <div class="font-weight-bold" th:text="${detailOrderItemDto.itemName}">상품 명칭이 들어갑니다.</div>
+                    <div class="small text-muted" th:text="${!#strings.isEmpty(detailOrderItemDto.optionName) ? '옵션: ' + detailOrderItemDto.optionName : '단일 상품(옵션 없음)'}">옵션: 블랙 / L</div>
+                    <div class="small text-dark mt-1">수량: <span th:text="${detailOrderItemDto.count}">1</span>개</div>
+                </div>
+                <div class="text-right">
+                    <div class="font-weight-bold" th:text="${#numbers.formatDecimal(detailOrderItemDto.totalPrice,  1, 'COMMA', 0, 'POINT') + '원'}">25,000원</div>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <!-- 4. 배송지 정보 -->
+                <div class="col-md-7">
+                    <div class="section-title">배송지 정보</div>
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <th style="width: 100px;" class="text-muted font-weight-normal">받는 사람</th>
+                            <td class="font-weight-bold" th:text="${detailOrderDto.recipientName}">홍길동</td>
+                        </tr>
+                        <tr>
+                            <th class="text-muted font-weight-normal">연락처</th>
+                            <td th:text="${detailOrderDto.phoneNumber}">010-1234-5678</td>
+                        </tr>
+                        <tr>
+                            <th class="text-muted font-weight-normal">주소</th>
+                            <td>
+                                <span th:text="|(${detailOrderDto.postcode})|">(12345)</span><br>
+                                <span th:text="${detailOrderDto.roadAddress}">서울시 강남구 테헤란로 123</span><br>
+                                <span th:text="${detailOrderDto.detailAddress}">4층 401호</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="text-muted font-weight-normal">배송메모</th>
+                            <td class="text-info" th:text="${detailOrderDto.deliveryRequest}">부재 시 문 앞에 놓아주세요.</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- 5. 결제 요약 정보 -->
+                <div class="col-md-5">
+                    <div class="section-title">결제 금액</div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="price-label">총 상품금액</span>
+                        <span class="price-value" th:text="${#numbers.formatDecimal(detailOrderDto.totalItemPrice,  1, 'COMMA', 0, 'POINT') + '원'}">50,000원</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="price-label">배송비</span>
+                        <span class="price-value" th:text="${#numbers.formatInteger(detailOrderDto.deliveryFee, 1, 'COMMA') + '원'}">3,000원</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 text-danger">
+                        <span class="price-label">할인금액</span>
+                        <span class="price-value">-0원</span>
+                    </div>
+                    <div class="total-price-area p-3 rounded d-flex justify-content-between align-items-center">
+                        <span class="font-weight-bold">최종 결제금액</span>
+                        <h4 class="text-primary font-weight-bold mb-0" th:text="${#numbers.formatDecimal(detailOrderDto.totalOrderPrice,  1, 'COMMA', 0, 'POINT') + '원'}">53,000원</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. 하단 버튼 영역 -->
+        <div class="card-footer bg-white border-top-0 p-4 text-center">
+            <a href="/" class="btn btn-outline-secondary px-4 py-2 mr-2">홈으로 이동</a>
+            <a href="/myPage/orderList" th:href="@{/myPage/orderList}" class="btn btn-primary px-4 py-2">주문 내역 보기</a>
+        </div>
+    </div>
+</div>
+
+<!-- JS 관련 (필요 시) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

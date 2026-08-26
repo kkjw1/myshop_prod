@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주문/배송 관리 | 판매자 센터</title>
+    <th:block th:replace="~{seller/common :: common_style}">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    </th:block>
+
+    <style th:replace="~{seller/common :: sidebar_style}">
+        body {
+            background-color: #f8f9fa; /* 밝은 배경색 */
+        }
+        .sidebar {
+            background-color: #2c3e50; /* 다크 네이비 */
+            min-height: 100vh;
+            color: white;
+            padding-top: 20px;
+        }
+        .sidebar .nav-link {
+            color: #ecf0f1;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            transition: background-color 0.3s;
+        }
+        .sidebar .nav-link.active-menu,
+        .sidebar .nav-link:hover {
+            background-color: #34495e;
+            border-left: 5px solid #3498db;
+            color: white;
+        }
+    </style>
+
+
+    <style>
+        /* 테이블 체크박스 중앙 정렬 */
+        .table-checkbox { vertical-align: middle; }
+    </style>
+</head>
+<body>
+
+<div class="d-flex">
+
+    <th:block th:replace="~{seller/common :: sidebar}">
+        <div class="sidebar d-none d-md-block" style="width: 250px;">
+            <h3 class="text-center mb-4 text-white">📦 판매자 센터</h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="home.html" th:href="@{/seller}"><i class="fas fa-tachometer-alt me-2"></i> 대시보드</a>
+                <a class="nav-link" href="item/item_manage.html" th:href="@{/seller/item_manage}"><i class="fas fa-box me-2"></i> 상품 관리</a>
+                <a class="nav-link" href="delivery/order_delivery.html" th:href="@{/seller/order_delivery}"><i class="fas fa-shopping-cart me-2"></i> 주문/배송</a>
+                <a class="nav-link" href="request/request_manage.html" th:href="@{/seller/request_manage}"><i class="fas fa-undo-alt me-2"></i> 취소/반품 관리</a>
+                <a class="nav-link" href="inquiry/inquiry_manage.html" th:href="@{/seller/inquiry_manage}"><i class="fas fa-comment-dots me-2"></i> 고객 문의</a>
+                <a class="nav-link" href="../home/home.html" th:href="@{/}"><i class="fas fa-sign-out-alt me-2"></i> 로그아웃</a>
+            </nav>
+        </div>
+    </th:block>
+
+    <div id="page-content-wrapper" class="flex-grow-1 p-4">
+        <header class="mb-4 d-flex justify-content-between align-items-center border-bottom pb-3">
+            <h1 class="h3 mb-0 text-dark"><i class="fas fa-truck me-2"></i> 주문/배송 관리</h1>
+            <div class="text-secondary">
+                <i class="fas fa-user-circle me-1"></i>[판매자]님, 환영합니다!
+                <i class="fas me-1"></i> 로그아웃
+            </div>
+        </header>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0" th:text="|총 ${orderDeliveryDtoList.size()}건의 주문 검색 결과|">총 150건의 주문 검색 결과</h5>
+            <div class="btn-group">
+                <button class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#batchProcessModal"><i class="fas fa-boxes me-1"></i> 선택 주문 상태 처리</button>
+<!--                <button class="btn btn-outline-success"><i class="fas fa-file-download me-1"></i> 주문 엑셀 다운로드</button>-->
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th style="width: 30px;" class="text-center">
+                                <input class="form-check-input table-checkbox" type="checkbox" id="selectAll">
+                            </th>
+                            <th>주문 상태</th>
+                            <th>주문번호</th>
+                            <th>주문 정보</th>
+                            <th>결제 금액</th>
+                            <th>주문일자</th>
+                            <th style="width: 80px;">관리</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="orderDeliveryDto, stat : ${orderDeliveryDtoList}">
+                            <td class="text-center"><input class="form-check-input order-checkbox table-checkbox" type="checkbox" th:data-order-id="${orderDeliveryDto.orderNo}"></td>
+                            <td th:switch="${orderDeliveryDto.orderStatus.name()}">
+                                <span th:case="'결제완료'" class="badge bg-warning text-dark">결제 완료</span>
+                                <span th:case="'처리완료'" class="badge bg-success">처리완료</span>
+<!--                                <span th:case="'상품준비중'" class="badge bg-info">상품 준비 중</span>
+                                <span th:case="'배송중'" class="badge bg-primary">배송 중</span>
+                                <span th:case="'배송완료'" class="badge bg-success">배송 완료</span>
+                                <span th:case="'취소접수'" class="badge bg-danger-subtle text-danger border border-danger">취소 접수</span>
+                                <span th:case="'취소완료'" class="badge bg-danger">취소 완료</span>
+                                <span th:case="'환불완료'" class="badge bg-secondary">환불 완료</span>
+                                <span th:case="*" class="badge bg-dark" th:text="${orderDeliveryDto.orderStatus.name()}">기타</span>-->
+                            </td>
+                            <td class="order-id" th:text="${orderDeliveryDto.orderNo}">20240720-00123</td>
+                            <td th:text="${orderDeliveryDto.orderInfo}">프리미엄 와이드 팬츠 외 1건</td>
+                            <td th:text="|${#numbers.formatDecimal(orderDeliveryDto.totalPrice, 0, 'COMMA', 0, 'POINT')}원|" class="payment-amount">72,000원</td>
+                            <td class="order-date" th:text="${#temporals.format(orderDeliveryDto.orderTime, 'yyyy-MM-dd')}">2024-07-20</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-outline-secondary btn-manage-order"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#orderDetailModal"
+                                        th:data-order-id="${orderDeliveryDto.orderNo}"
+                                        th:data-memo="${orderDeliveryDto.deliveryRequest}"
+                                > 관리 </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-white d-flex justify-content-center">
+                <nav>
+                    <ul class="pagination mb-0">
+                        <li class="page-item disabled"><a class="page-link" href="#">이전</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">다음</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!--선택 주문 처리-->
+<div class="modal fade" id="batchProcessModal" tabindex="-1" aria-labelledby="batchProcessModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="batchProcessModalLabel"><i class="fas fa-tasks me-2"></i> 선택 주문 상태 일괄 변경</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="alert alert-primary mb-3" role="alert">
+                    <i class="fas fa-check-circle me-1"></i> 현재 <span id="selectedOrderCount">0</span>건의 주문이 선택되었습니다.
+                </div>
+
+                <form id="batchStatusForm">
+                    <div class="mb-2">
+                        <label for="batchUpdateStatus" class="form-label fw-bold">변경할 주문 상태 선택</label>
+                        <select id="batchUpdateStatus" class="form-select form-select-lg border-info" required>
+                            <option selected disabled value="">상태를 선택하세요</option>
+                            <option value="결제완료">결제 완료</option>
+                            <option value="처리완료">처리 완료</option>
+<!--                            <option value="상품준비중">상품 준비 중</option>
+                            <option value="배송중">배송 중</option>
+                            <option value="배송완료">배송 완료</option>
+                            <option value="취소접수">취소 접수</option>
+                            <option value="환불완료">환불 완료</option>
+                            <option value="취소완료">취소 완료</option>-->
+                        </select>
+                    </div>
+                    <div class="form-text text-muted">
+                        <i class="fas fa-info-circle me-1"></i> 선택하신 모든 주문의 상태가 위에서 지정한 상태로 한 번에 변경됩니다.
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-info text-white" id="processBatchButton"><i class="fas fa-sync-alt me-1"></i> 일괄 상태 변경 적용</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--관리-->
+<div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="orderDetailModalLabel"><i class="fas fa-box-open me-2"></i> 주문 상품별 개별 배송/송장 관리</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-md-6">
+                        <div class="p-2 border rounded bg-light text-center">
+                            <small class="text-muted d-block">주문번호</small>
+                            <strong id="detailOrderId" class="text-dark">-</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-6">
+                        <div class="p-2 border rounded bg-light text-center">
+                            <small class="text-muted d-block">전체 결제금액</small>
+                            <strong id="detailPayment" class="text-danger">-</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-info mb-4 bg-info-subtle">
+                    <div class="card-body py-3">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-12 mb-1">
+                                <span class="badge bg-info text-dark fw-bold"><i class="fas fa-magic me-1"></i> 공통 입력 (일괄 적용)</span>
+                                <small class="text-muted ms-2">모든 상품의 상태와 송장을 동일하게 입력하려면 이용하세요.</small>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small fw-bold text-secondary mb-1">공통 배송상태</label>
+                                <select id="globalStatusSelect" class="form-select form-select-sm border-info">
+                                    <option value="">선택 안 함</option>
+                                    <option value="상품준비중">상품 준비 중</option>
+                                    <option value="배송중">배송 중</option>
+                                    <option value="배송완료">배송 완료</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small fw-bold text-secondary mb-1">공통 택배사</label>
+                                <select id="globalCourierSelect" class="form-select form-select-sm border-info">
+                                    <option value="">선택 안 함</option>
+                                    <option value="CJ대한통운">CJ대한통운</option>
+                                    <option value="우체국택배">우체국택배</option>
+                                    <option value="롯데택배">롯데택배</option>
+                                    <option value="한진택배">한진택배</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small fw-bold text-secondary mb-1">공통 운송장 번호</label>
+                                <input type="text" id="globalTrackingInput" class="form-control form-control-sm border-info" placeholder="숫자만 입력">
+                            </div>
+                            <div class="col-md-3">
+                                <button type="button" id="btnApplyGlobal" class="btn btn-info btn-sm w-100 text-white fw-bold">
+                                    <i class="fas fa-check me-1"></i> 모든 상품에 일괄 적용
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light fw-bold text-secondary">
+                        <i class="fas fa-list me-1"></i> 주문 상품 목록 및 배송 처리
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+                            <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem; min-width: 1000px;">
+                                <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>상품명 / 옵션</th>
+                                    <th class="text-center" style="width: 60px;">수량</th>
+                                    <th class="text-center" style="width: 120px;">상품주문상태</th>
+                                    <th class="text-center" style="width: 120px;">현재 배송상태</th>
+                                    <th class="text-center" style="width: 150px;">배송 상태 변경</th>
+                                    <th class="text-center" style="width: 150px;">택배사 선택</th>
+                                    <th class="text-center" style="width: 200px;">운송장 번호 입력</th>
+                                </tr>
+                                </thead>
+                                <tbody id="detailProductList">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold mb-2 text-primary"><i class="fas fa-map-marker-alt me-1"></i> 배송지 정보</h6>
+                <div class="card bg-light border-0">
+                    <div class="card-body p-3" style="font-size: 0.88rem;">
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <strong class="text-secondary">수취인:</strong> <span id="detailReceiver" class="text-dark">홍길동</span>
+                            </div>
+                            <div class="col-md-8">
+                                <strong class="text-secondary">연락처:</strong> <span id="detailPhone" class="text-dark">010-1234-5678</span>
+                            </div>
+                            <div class="col-12 border-top my-2 pt-2 col-md-4">
+                                <strong class="text-secondary">배송지 주소:</strong> <span id="detailAddress" class="text-dark">서울특별시 강남구 테헤란로 123</span>
+                            </div>
+                            <div class="col-12 border-top my-2 pt-2 col-md-8">
+                                <strong class="text-secondary">배송 요청사항:</strong> <span id="detailMemo" class="text-dark">배송 요청사항</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" id="saveOrderChangesButton"><i class="fas fa-save me-1"></i> 변경사항 저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        const batchProcessModal = document.getElementById('batchProcessModal');
+        const countSpan = document.getElementById('selectedOrderCount');
+        const processBatchButton = document.getElementById('processBatchButton');
+        const orderCheckboxes = document.querySelectorAll('.order-checkbox');
+        const selectAllCheckbox = document.getElementById('selectAll');
+
+        // --- 기능 1: 체크된 주문 개수 계산 및 업데이트 ---
+        function updateSelectedCount() {
+            const checkedCount = document.querySelectorAll('.order-checkbox:checked').length;
+            countSpan.textContent = checkedCount;
+
+            processBatchButton.disabled = checkedCount === 0;
+            if (checkedCount === 0) {
+                processBatchButton.textContent = '선택된 주문이 없습니다';
+            } else {
+                processBatchButton.innerHTML = `<i class="fas fa-paper-plane me-2"></i> 상태 일괄 변경 (${checkedCount}건)`;
+            }
+            return checkedCount;
+        }
+
+        orderCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateSelectedCount);
+        });
+
+        selectAllCheckbox.addEventListener('change', function() {
+            orderCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+            updateSelectedCount();
+        });
+
+        updateSelectedCount();
+
+        // --- 기능 2: 모달이 열릴 때 데이터 설정 및 초기화 ---
+        batchProcessModal.addEventListener('show.bs.modal', function (event) {
+            updateSelectedCount();
+
+            document.getElementById('batchCourier').value = '';
+            document.getElementById('batchTrackingNumber').value = '';
+
+            new bootstrap.Tab(document.getElementById('pills-manual-tab')).show();
+        });
+
+        // --- 기능 3: 모달 내 일괄 처리 버튼 클릭 로직 ---
+        processBatchButton.addEventListener('click', async function() {
+            const checkedBoxes = document.querySelectorAll('.order-checkbox:checked');
+            const currentCount = checkedBoxes.length;
+            if (currentCount === 0) return;
+
+            const batchStatus = document.getElementById('batchUpdateStatus').value;
+            if (!batchStatus) {
+                alert('변경할 주문 상태를 선택해 주세요.');
+                return;
+            }
+
+            const orderIds = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-order-id'));
+
+            const batchButton = this;
+            batchButton.disabled = true;
+            batchButton.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i> 일괄 처리 중...`;
+
+            const payload = {
+                orderNoList: orderIds,
+                orderStatus: batchStatus
+            };
+
+            try {
+                const response = await fetch(`/seller/order_delivery/batch_update`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const resText = await response.text();
+
+                if (resText !== "ok") {
+                    throw new Error(`서버 저장 실패 (상태코드: ${response.status})`);
+                }
+
+                alert(`✅ 선택하신 ${currentCount}건의 주문 상태가 [${batchStatus}]로 일괄 변경되었습니다.`);
+
+                const modal = bootstrap.Modal.getInstance(batchProcessModal);
+                modal.hide();
+
+                selectAllCheckbox.checked = false;
+                orderCheckboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                updateSelectedCount();
+
+                location.reload();
+
+            } catch (e) {
+                console.error("일괄 처리 에러:", e);
+                alert(`❌ 일괄 변경 중 오류가 발생했습니다.\n이유: ${e.message}`);
+            } finally {
+                batchButton.disabled = false;
+                updateSelectedCount();
+            }
+        });
+
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const orderDetailModal = document.getElementById('orderDetailModal');
+        const detailProductList = document.getElementById('detailProductList');
+
+        // 상태 텍스트별 Bootstrap 배지 템플릿
+        function getStatusBadgeHtml(status) {
+            if (status === '상품준비중') return `<span class="badge bg-info"><i class="fas fa-spinner fa-spin me-1"></i>준비 중</span>`;
+            if (status === '배송중') return `<span class="badge bg-primary"><i class="fas fa-truck me-1"></i>배송 중</span>`;
+            if (status === '배송완료') return `<span class="badge bg-success"><i class="fas fa-check-double me-1"></i>배송 완료</span>`;
+            return `<span class="badge bg-secondary">${status}</span>`;
+        }
+
+        // 개별 상품 상태 변경 시 해당 행의 송장 필드 활성화/비활성화 제어 함수
+        function handleRowDeliveryFields(row, status) {
+            const courierSelect = row.querySelector('.prod-courier-select');
+            const trackingInput = row.querySelector('.prod-tracking-input');
+
+            if (status === '배송중' || status === '배송완료') {
+                courierSelect.disabled = false;
+                trackingInput.disabled = false;
+                trackingInput.classList.add('border-primary');
+                courierSelect.classList.add('border-primary');
+            } else {
+                courierSelect.disabled = true;
+                trackingInput.disabled = true;
+                courierSelect.value = '';
+                trackingInput.value = '';
+                trackingInput.classList.remove('border-primary');
+                courierSelect.classList.remove('border-primary');
+            }
+        }
+
+        // OrderItemStatus 전용 뱃지 생성 함수
+        function getOrderItemStatusBadgeHtml(status) {
+            if (!status) return '<span class="badge bg-secondary">-</span>';
+
+            const statusStr = typeof status === 'object' ? status.name : status;
+
+            switch (statusStr) {
+                case 'ORDERED':
+                case '주문완료':
+                    return '<span class="badge bg-secondary">주문완료</span>';
+                case 'PURCHASE_CONFIRMED':
+                case '구매확정':
+                    return '<span class="badge bg-success">구매확정</span>';
+                case 'CANCEL_REQUEST':
+                case '취소요청':
+                    return '<span class="badge bg-warning text-dark">취소요청</span>';
+                case 'CANCELLED':
+                case '취소완료':
+                    return '<span class="badge bg-danger">취소완료</span>';
+                case 'REFUND_REQUEST':
+                case '환불요청':
+                    return '<span class="badge bg-warning text-dark">환불요청</span>';
+                case 'REFUNDED':
+                case '환불완료':
+                    return '<span class="badge bg-danger">환불완료</span>';
+                default:
+                    return `<span class="badge bg-dark">${statusStr}</span>`;
+            }
+        }
+
+        // 관리 버튼 클릭 시 모달 생성
+        document.querySelectorAll('.btn-manage-order').forEach(button => {
+            button.addEventListener('click', async function() {
+                const row = this.closest('tr');
+                const orderId = row.querySelector('.order-id').textContent;
+                const payment = row.querySelector('.payment-amount').textContent;
+                const memo = this.getAttribute('data-memo') || '선택된 배송 요청사항이 없습니다.';
+
+                document.getElementById('detailOrderId').textContent = orderId;
+                document.getElementById('detailPayment').textContent = payment;
+                document.getElementById('detailMemo').textContent = memo;
+
+                document.getElementById('globalStatusSelect').value = '';
+                document.getElementById('globalCourierSelect').value = '';
+                document.getElementById('globalTrackingInput').value = '';
+
+                const detailProductList = document.getElementById('detailProductList');
+                detailProductList.innerHTML = '';
+
+                try {
+                    const response = await fetch(`/seller/order_delivery/manage?orderNo=${orderId}`);
+                    const products = await response.json();
+
+                    products.forEach((product, index) => {
+                        const tr = document.createElement('tr');
+                        tr.className = "product-item-row";
+                        tr.setAttribute('data-product-id', product.orderItemNo || index);
+
+                        tr.innerHTML = `
+                            <td><div class="fw-bold text-dark">${product.itemName}</div></td>
+                            <td class="text-center fw-bold">${product.count}</td>
+                            <td class="text-center">${getOrderItemStatusBadgeHtml(product.orderItemStatus)}</td>
+                            <td class="text-center current-prod-status-badge">${getStatusBadgeHtml(product.deliveryStatus)}</td>
+                            <td>
+                                <select class="form-select form-select-sm prod-status-select">
+                                    <option value="상품준비중" ${product.deliveryStatus === '상품준비중' ? 'selected' : ''}>상품 준비 중</option>
+                                    <option value="배송중" ${product.deliveryStatus === '배송중' ? 'selected' : ''}>배송 중</option>
+                                    <option value="배송완료" ${product.deliveryStatus === '배송완료' ? 'selected' : ''}>배송 완료</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-select form-select-sm prod-courier-select" disabled>
+                                    <option value="">택배사 선택</option>
+                                    <option value="CJ대한통운" ${product.courier === 'CJ대한통운' ? 'selected' : ''}>CJ대한통운</option>
+                                    <option value="우체국택배" ${product.courier === '우체국택배' ? 'selected' : ''}>우체국택배</option>
+                                    <option value="롯데택배" ${product.courier === '롯데택배' ? 'selected' : ''}>롯데택배</option>
+                                    <option value="한진택배" ${product.courier === '한진택배' ? 'selected' : ''}>한진택배</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm prod-tracking-input"
+                                       placeholder="숫자만 입력" value="${product.trackingNumber || ''}" disabled>
+                            </td>
+                        `;
+
+                        handleRowDeliveryFields(tr, product.deliveryStatus);
+
+                        // [수정점]: select 박스 값 변경 시 현재 배송상태 뱃지는 변경하지 않고, Input/Select 활성화 제어만 진행
+                        const statusSelect = tr.querySelector('.prod-status-select');
+                        statusSelect.addEventListener('change', function() {
+                            handleRowDeliveryFields(tr, this.value);
+                        });
+
+                        detailProductList.appendChild(tr);
+                    });
+                } catch (e) {
+                    console.error("최종 데이터 로드 에러:", e);
+                    detailProductList.innerHTML = '<tr><td colspan="7" class="text-center text-danger">상품 데이터를 불러오지 못했습니다.</td></tr>';
+                }
+            });
+        });
+
+        // --- 상단 공통 입력 사항을 아래 모든 상품에 일괄 적용 ---
+        document.getElementById('btnApplyGlobal').addEventListener('click', function() {
+            const globalStatus = document.getElementById('globalStatusSelect').value;
+            const globalCourier = document.getElementById('globalCourierSelect').value;
+            const globalTracking = document.getElementById('globalTrackingInput').value.trim();
+
+            const productRows = document.querySelectorAll('.product-item-row');
+
+            if (!globalStatus && !globalCourier && !globalTracking) {
+                alert('공통 입력 영역에 적용할 값을 최소 하나 이상 선택/입력해 주세요.');
+                return;
+            }
+
+            productRows.forEach(row => {
+                // [수정점]: 공통 배송상태 적용 시 뱃지(current-prod-status-badge) 변경 제거
+                if (globalStatus) {
+                    const statusSelect = row.querySelector('.prod-status-select');
+                    statusSelect.value = globalStatus;
+                    handleRowDeliveryFields(row, globalStatus);
+                }
+
+                if (globalCourier) {
+                    const courierSelect = row.querySelector('.prod-courier-select');
+                    if (!courierSelect.disabled) {
+                        courierSelect.value = globalCourier;
+                    }
+                }
+
+                if (globalTracking) {
+                    const trackingInput = row.querySelector('.prod-tracking-input');
+                    if (!trackingInput.disabled) {
+                        trackingInput.value = globalTracking;
+                    }
+                }
+            });
+        });
+
+        // --- 기능 3: 변경사항 저장 및 각 행별 유효성 검사 ---
+        document.getElementById('saveOrderChangesButton').addEventListener('click', async function() {
+            const orderId = document.getElementById('detailOrderId').textContent;
+            const productRows = document.querySelectorAll('.product-item-row');
+
+            const savePayload = [];
+            let validationFailed = false;
+
+            for (let row of productRows) {
+                const pId = row.getAttribute('data-product-id');
+                const productName = row.querySelector('td div').textContent;
+                const status = row.querySelector('.prod-status-select').value;
+                const courier = row.querySelector('.prod-courier-select').value;
+                const trackingNum = row.querySelector('.prod-tracking-input').value.trim();
+
+                if ((status === '배송중' || status === '배송완료') && (!courier || !trackingNum)) {
+                    alert(`⚠️ 송장 정보가 누락되었습니다.\n\n[대상 상품]: ${productName}\n택배사와 운송장 번호를 모두 입력해 주세요.`);
+                    row.querySelector('.prod-tracking-input').focus();
+                    validationFailed = true;
+                    break;
+                }
+
+                savePayload.push({
+                    orderItemNo: pId,
+                    deliveryStatus: status,
+                    courier: courier,
+                    trackingNumber: trackingNum
+                });
+            }
+
+            if (validationFailed) return;
+
+            const saveButton = this;
+            saveButton.disabled = true;
+            saveButton.innerHTML = `<i class="fas fa-spinner fa-spin me-1"></i> 저장 중...`;
+
+            try {
+                const response = await fetch(`/seller/order_delivery/update`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(savePayload)
+                });
+
+                const resText = await response.text();
+
+                // [보완]: 조건문 판단 오류 수정 (if (!resText === "ok") -> if (resText !== "ok"))
+                if (resText !== "ok") {
+                    throw new Error(`서버 저장 실패 (상태코드: ${response.status})`);
+                }
+
+                let alertResult = `✅ [주문번호: ${orderId}]의 상품별 변경사항이 서버에 성공적으로 저장되었습니다.\n\n`;
+                savePayload.forEach((item, index) => {
+                    alertResult += `${index + 1}. 상태: [${item.deliveryStatus}] | 송장: ${item.courier ? item.courier + '(' + item.trackingNumber + ')' : '없음'}\n`;
+                });
+                alert(alertResult);
+
+                const modal = bootstrap.Modal.getInstance(orderDetailModal);
+                modal.hide();
+
+                // 변경사항이 저장된 후 새로고침하여 반영
+                location.reload();
+
+            } catch (e) {
+                console.error("서버 업데이트 에러:", e);
+                alert(`❌ 저장 중 오류가 발생했습니다.\n이유: ${e.message}`);
+            } finally {
+                saveButton.disabled = false;
+                saveButton.innerHTML = `<i class="fas fa-save me-1"></i> 변경사항 저장`;
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

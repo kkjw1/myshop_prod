@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 관리 | 판매자 센터</title>
+<!--    <th:block th:replace="~{seller/common :: common_style}"></th:block>-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* 테이블 내 이미지 스타일 */
+        .product-thumb {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+    </style>
+
+    <style th:replace="~{seller/common :: sidebar_style}">
+        body {
+            background-color: #f8f9fa; /* 밝은 배경색 */
+        }
+        .sidebar {
+            background-color: #2c3e50; /* 다크 네이비 */
+            min-height: 100vh;
+            color: white;
+            padding-top: 20px;
+        }
+        .sidebar .nav-link {
+            color: #ecf0f1;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            transition: background-color 0.3s;
+        }
+        .sidebar .nav-link.active-menu,
+        .sidebar .nav-link:hover {
+            background-color: #34495e;
+            border-left: 5px solid #3498db;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="d-flex">
+
+    <div th:replace="~{seller/common :: sidebar}">
+        <div class="sidebar d-none d-md-block" style="width: 250px;">
+            <h3 class="text-center mb-4 text-white">📦 판매자 센터</h3>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="home.html" th:href="@{/seller/item_manage}"><i class="fas fa-tachometer-alt me-2"></i> 대시보드</a>
+                <a class="nav-link" href="item/item_manage.html" th:href="@{/seller/item_manage}"><i class="fas fa-box me-2"></i> 상품 관리</a>
+                <a class="nav-link" href="delivery/order_delivery.html" th:href="@{/seller/order_delivery}"><i class="fas fa-shopping-cart me-2"></i> 주문/배송</a>
+                <a class="nav-link" href="request/request_manage.html" th:href="@{/seller/request_manage}"><i class="fas fa-undo-alt me-2"></i> 취소/반품 관리</a>
+                <a class="nav-link" href="inquiry/inquiry_manage.html" th:href="@{/seller/inquiry_manage}"><i class="fas fa-comment-dots me-2"></i> 고객 문의</a>
+                <a class="nav-link" href="../home/home.html" th:href="@{/}"><i class="fas fa-sign-out-alt me-2"></i> 로그아웃</a>
+            </nav>
+        </div>
+    </div>
+
+
+    <div id="page-content-wrapper" class="flex-grow-1 p-4">
+        <header class="mb-4 d-flex justify-content-between align-items-center border-bottom pb-3">
+            <h1 class="h3 mb-0 text-dark"><i class="fas fa-box me-2"></i> 상품 관리</h1>
+            <button class="btn btn-primary btn-lg" type="button" th:onclick="|location.href='@{/seller/item_new}'|">
+                <i class="fas fa-plus me-1"></i> 새 상품 등록
+            </button>
+        </header>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <form class="row g-3 align-items-center" th:action="@{/seller/item_manage}" method="get" th:object="${searchItemDto}">
+
+                    <div class="col-md-3">
+                        <select id="searchType" class="form-select">
+                            <option value="name" th:selected="${param.itemNo == null && (searchItemDto.itemNo == null)}">상품명</option>
+                            <option value="itemNo" th:selected="${param.itemNo != null || (searchItemDto.itemNo != null)}">상품번호</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="searchInput"
+                               th:name="${param.itemNo != null || searchItemDto.itemNo != null} ? 'itemNo' : 'name'"
+                               th:placeholder="${param.itemNo != null || searchItemDto.itemNo != null} ? '상품번호를 숫자로 입력하세요' : '검색어를 입력하세요'"
+                               th:value="${param.itemNo != null || searchItemDto.itemNo != null} ? *{itemNo} : *{name}">
+                    </div>
+
+                    <div class="col-md-3">
+                        <select th:field="*{itemStatus}" class="form-select">
+                            <option value="">전체 판매 상태</option>
+                            <option th:each="status : ${T(myshop.shop.entity.item.ItemStatus).values()}"
+                                    th:value="${status}"
+                                    th:text="${status}">판매중</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-dark w-100"><i class="fas fa-search me-1"></i> 검색</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0" th:text="|총 등록 상품: ${manageItemDtoList.getTotalElements()}개|">총 등록 상품: 50개</h5>
+                <button class="btn btn-sm btn-outline-secondary" type="button"
+                        id="bulkEditBtn"
+                        data-bs-toggle="modal"
+                        data-bs-target="#bulkEditModal"
+                        disabled>
+                    <i class="fas fa-undo-alt me-1"></i> 일괄 수정
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th style="width: 20px;"><input class="form-check-input" type="checkbox" id="checkAll"></th>
+                            <th style="width: 80px;">이미지</th>
+                            <th>상품 정보</th>
+                            <th style="width: 100px;">판매가</th>
+                            <th style="width: 80px;">재고</th>
+                            <th style="width: 100px;">판매 상태</th>
+                            <th style="width: 100px;">등록일</th>
+                            <th style="width: 100px;">관리</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="manageItemDto:${manageItemDtoList}">
+                            <td><input class="form-check-input item-check" type="checkbox" th:value="${manageItemDto.getItemNo()}"></td>
+                            <td><img src="/static/no_image.png" th:src="${manageItemDto.getMainImagePath()}" alt="상품 썸네일" class="product-thumb border"></td>
+                            <td>
+                                <strong class="d-block" th:text="${manageItemDto.getName()}">프리미엄 와이드 팬츠</strong>
+                                <small class="text-muted" th:text="|NO:${manageItemDto.getItemNo()}|">NO:PT1001</small>
+                            </td>
+                            <td th:text="|${#numbers.formatDecimal(manageItemDto.price, 0, 'COMMA', 0, 'POINT')}원|">39,000원</td>
+                            <td><span class="badge bg-warning text-dark" th:text="|${manageItemDto.getTotalStock()}개|">5개</span></td>
+                            <td><span class="badge" th:classappend="${manageItemDto.getItemStatus().getClassAppend()}"
+                            th:text="${manageItemDto.getItemStatus()}">판매 중</span></td>
+                            <td th:text="${#temporals.format(manageItemDto.createdDate, 'yyyy-MM-dd')}">2024-05-01</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1"
+                                        title="수정"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editModal"
+                                        th:item-no="${manageItemDto.getItemNo()}"
+                                        onclick="fillModifyModal(this)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger"
+                                        th:item-no="${manageItemDto.getItemNo()}"
+                                        onclick="removeItem(this)" title="삭제"><i class="fas fa-trash-alt"></i></button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-white">
+                <nav aria-label="Page navigation" th:if="${!manageItemDtoList.isEmpty()}">
+                    <ul class="pagination justify-content-center mb-0">
+
+                        <li class="page-item" th:classappend="${manageItemDtoList.first} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/seller/item_manage(
+                                   page=${manageItemDtoList.number - 1},
+                                   name=${searchItemDto.name},
+                                   itemStatus=${searchItemDto.itemStatus},
+                                   itemNo=${searchItemDto.itemNo})}"
+                               aria-label="Previous">
+                                <span aria-hidden="true">이전</span>
+                            </a>
+                        </li>
+
+                        <li class="page-item"
+                            th:each="page : ${#numbers.sequence(0, manageItemDtoList.totalPages - 1)}"
+                            th:if="${page >= manageItemDtoList.number - 2 and page <= manageItemDtoList.number + 2}"
+                            th:classappend="${page == manageItemDtoList.number} ? 'active'">
+                            <a class="page-link"
+                               th:href="@{/seller/item_manage(
+                                   page=${page},
+                                   name=${searchItemDto.name},
+                                   itemStatus=${searchItemDto.itemStatus},
+                                   itemNo=${searchItemDto.itemNo})}"
+                               th:text="${page + 1}">1</a>
+                        </li>
+
+                        <li class="page-item" th:classappend="${manageItemDtoList.last} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/seller/item_manage(
+                                   page=${manageItemDtoList.number + 1},
+                                   name=${searchItemDto.name},
+                                   itemStatus=${searchItemDto.itemStatus},
+                                   itemNo=${searchItemDto.itemNo})}"
+                               aria-label="Next">
+                                <span aria-hidden="true">다음</span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel"><i class="fas fa-edit me-2"></i>상품 정보 수정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" th:action="@{/seller/item_manage/modify}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" id="editProductItemNo" name="itemNo" value="">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">상품명</label>
+                            <input type="text" class="form-control" id="editProductName" name="name" value="프리미엄 와이드 팬츠">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">판매가</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="editProductPrice" name="price" value="39000">
+                                <span class="input-group-text">원</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">총 재고 수량</label>
+                            <input type="number" class="form-control" id="editProductStock" name="totalStock" value="5">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">판매 상태</label>
+                            <select class="form-select" id="editProductStatus" name="itemStatus">
+                                <option th:each="status : ${T(myshop.shop.entity.item.ItemStatus).values()}"
+                                        th:value="${status}"
+                                        th:text="${status}">판매중</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">할인율</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="editProductDiscount" name="discountPer" value="10" min="0" max="100">
+                                <span class="input-group-text">%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label fw-bold mb-0"><i class="fas fa-list-ul me-1"></i> 상품 옵션 설정</label>
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="addOptionRow()">
+                                <i class="fas fa-plus me-1"></i> 옵션 추가
+                            </button>
+                        </div>
+                        <div id="editOptionContainer" class="p-3 border rounded bg-light">
+                            <div id="noOptionMsg" class="text-center text-muted small py-2">등록된 옵션이 없습니다.</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-4 border-top pt-4">
+                        <label class="form-label fw-bold"><i class="fas fa-images me-1"></i> 상품 이미지 수정(변경 시에만 입력하세요)</label>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light small fw-bold">대표 이미지</div>
+                                    <div class="card-body text-center">
+                                        <img id="mainPreview" src="" class="img-thumbnail mb-2 d-none" style="max-height: 150px;">
+                                        <input type="file" class="form-control form-control-sm" id="mainImageInput" name="mainImage">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light small fw-bold">추가 상세 이미지 (다중 선택 가능)</div>
+                                    <div class="card-body">
+                                        <div id="subImagePreviewContainer" class="d-flex flex-wrap gap-2 mb-2">
+                                        </div>
+                                        <input type="file" class="form-control form-control-sm" id="subImageInput" name="subImages"
+                                                multiple="multiple">
+                                        <div class="form-text small">Ctrl 또는 Shift를 누른 채로 여러 장을 선택할 수 있습니다.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-4">
+                        <label class="form-label fw-bold"><i class="fas fa-align-left me-1"></i> 상품 상세설명</label>
+                        <textarea class="form-control" id="editProductDetail" name="content"
+                                  rows="5" placeholder="상품에 대한 상세한 설명을 입력하세요."></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                        <button type="submit" class="btn btn-primary">수정 완료</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="bulkEditModal" tabindex="-1" aria-labelledby="bulkEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="bulkEditModalLabel"><i class="fas fa-layer-group me-2"></i>선택 상품 일괄 수정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small"><span id="selectedCount" class="fw-bold text-primary">0</span>개의 상품이 선택되었습니다.</p>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold"><i class="fas fa-tag me-1"></i> 판매 상태 변경</label>
+                    <select class="form-select" id="bulkStatus">
+                        <option value="" selected>-- 변경 안 함 --</option>
+                        <option th:each="status : ${T(myshop.shop.entity.item.ItemStatus).values()}"
+                                th:value="${status}"
+                                th:text="${status}">판매중</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold"><i class="fas fa-percentage me-1"></i> 일괄 할인율 설정</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="bulkDiscount" placeholder="0" max="100">
+                        <span class="input-group-text">%</span>
+                    </div>
+                    <div class="form-text text-danger">
+                        * 0 입력 시 할인이 해제됩니다. (0~100 사이 입력)
+                    </div>
+                </div>
+
+                <div class="alert alert-warning mb-0 mt-4">
+                    <small><i class="fas fa-exclamation-triangle me-1"></i> 빈 칸으로 두는 항목은 기존 정보가 유지됩니다.</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" onclick="applyBulkEdit()">일괄 적용</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script th:inline="javascript">
+
+    async function removeItem(button) {
+        const itemNo = button.getAttribute('item-no');
+
+        if (!confirm("정말 이 상품을 삭제하시겠습니까?")) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`/seller/item_manage/remove?itemNo=${itemNo}`, {
+                method: 'POST'
+            });
+            const resText = await res.text();
+
+            if (resText === "ok") {
+                alert("상품이 삭제되었습니다.");
+                // 4. 삭제 후 목록 페이지로 이동 (리다이렉트 효과)
+                location.href = '/seller/item_manage';
+            } else {
+                alert("삭제 실패: 서버 오류가 발생했습니다.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("요청 중 오류가 발생했습니다.");
+        }
+
+    }
+
+    document.getElementById('searchType').addEventListener('change', function() {
+        const searchInput = document.getElementById('searchInput');
+        if (this.value === 'itemNo') {
+            searchInput.name = 'itemNo';
+            searchInput.placeholder = '상품번호를 숫자로 입력하세요';
+        } else {
+            searchInput.name = 'name';
+            searchInput.placeholder = '상품명을 입력하세요';
+        }
+    });
+
+    // 1. 전체 선택 체크박스 기능
+    const checkAll = document.getElementById('checkAll');
+    const checkboxes = document.querySelectorAll('tbody .form-check-input');
+    const bulkEditBtn = document.getElementById('bulkEditBtn');
+    const selectedCountSpan = document.getElementById('selectedCount');
+
+
+    // 2. 총 재고 자동 계산 함수 (새로 추가)
+    function updateSumStock() {
+        let total = 0;
+        // 모든 옵션 재고 input을 찾아서 더함
+        const stockInputs = document.querySelectorAll('.opt-stock-input');
+        stockInputs.forEach(input => {
+            total += parseInt(input.value || 0);
+        });
+        // 총 재고 수량 필드 업데이트
+        document.getElementById('editProductStock').value = total;
+    }
+
+    // 체크박스 상태에 따라 일괄 수정 버튼 활성화 여부 결정
+    function updateBulkButtonState() {
+        const checkedCount = document.querySelectorAll('tbody .form-check-input:checked').length;
+
+        // 버튼 활성화/비활성화
+        bulkEditBtn.disabled = checkedCount === 0;
+
+        // 모달 내 선택된 개수 텍스트 업데이트
+        if(selectedCountSpan) {
+            selectedCountSpan.innerText = checkedCount;
+        }
+    }
+
+    // 1. 전체 선택 기능
+    checkAll.addEventListener('change', function() {
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+        updateBulkButtonState();
+    });
+
+
+    if(checkAll) {
+        checkAll.addEventListener('change', function() {
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+    }
+
+    // 2. 개별 체크박스 상태에 따른 전체 선택 해제/체크
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const checkedCount = document.querySelectorAll('tbody .form-check-input:checked').length;
+            checkAll.checked = (checkedCount === checkboxes.length);
+            updateBulkButtonState();
+        });
+    });
+    let optionIndex = 0; // 옵션 인덱스 관리
+
+    async function fillModifyModal(button) {
+        const itemNo = button.getAttribute('item-no');
+
+        try {
+            const response = await fetch(`/seller/item_manage/modify?itemNo=${itemNo}`);
+            const data = await response.json();
+
+            // 1. 기본 정보 필드 채우기
+            document.getElementById('editProductItemNo').value = data.itemNo;
+            document.getElementById('editProductName').value = data.name;
+            document.getElementById('editProductPrice').value = data.price;
+            document.getElementById('editProductStock').value = data.totalStock;
+            document.getElementById('editProductStatus').value = data.itemStatus;
+            document.getElementById('editProductDiscount').value = data.discountPer;
+            document.getElementById('editProductDetail').value = data.content || '';
+
+            // 폼에 itemNo 저장 (수정 완료 클릭 시 서버에 보낼 용도)
+            // document.getElementById('editForm').dataset.id = itemNo;
+
+            // 2. 상품 옵션 목록 렌더링
+            const optionContainer = document.getElementById('editOptionContainer');
+
+            // 기존 내용(메시지 포함) 비우기
+            optionContainer.innerHTML = '';
+
+            if (data.modifyItemOptionDtoList && data.modifyItemOptionDtoList.length > 0) {
+                const container = document.getElementById('editOptionContainer');
+                container.innerHTML = ''; // 기존 내용 비우기
+
+                data.modifyItemOptionDtoList.forEach((option, index) => {
+                    const optionRow = `
+                        <div class="row g-2 mb-2 align-items-center option-row border-bottom pb-2">
+                            <!-- 기존 옵션 식별을 위한 ID (수정 시 필요) -->
+                            <input type="hidden" name="modifyItemOptionDtoList[${index}].id" value="${option.id || ''}">
+
+                            <div class="col-md-4">
+                                <input type="text" class="form-control form-control-sm opt-name-input"
+                                       name="modifyItemOptionDtoList[${index}].name" value="${option.name}"
+                                       placeholder="예: 블랙 / XL" required>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">추가금</span>
+                                    <input type="number" class="form-control opt-price-input"
+                                           name="modifyItemOptionDtoList[${index}].additionalPrice" value="${option.additionalPrice}" min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">재고</span>
+                                    <input type="number" class="form-control opt-stock-input"
+                                           name="modifyItemOptionDtoList[${index}].optionStock" value="${option.optionStock}"
+                                           min="0" required oninput="updateSumStock()">
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeOptionRow(this)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>`;
+                    container.insertAdjacentHTML('beforeend', optionRow);
+                });
+                updateSumStock();
+
+            } else {
+                // 옵션이 없을 때 표시할 기본 UI
+                optionContainer.innerHTML = '<div id="noOptionMsg" class="text-center text-muted small py-2">등록된 옵션이 없습니다.</div>';
+            }
+
+        } catch (error) {
+            console.error("데이터 로딩 중 오류:", error);
+            alert("상품 데이터를 가져오지 못했습니다.");
+        }
+    }
+
+    // 3. 수정 팝업 -> 옵션 행 추가 함수 (기존 함수 수정: 클래스명 추가 및 이벤트 연결)
+    function addOptionRow(data = {name: '', additionalPrice: 0, optionStock: 0}) {
+        const container = document.getElementById('editOptionContainer');
+        const noMsg = document.getElementById('noOptionMsg');
+
+        // 현재 존재하는 옵션 행의 개수를 파악하여 인덱스 결정
+        const index = container.getElementsByClassName('option-row').length;
+
+        if (noMsg) noMsg.remove();
+
+        const row = document.createElement('div');
+        row.className = 'row g-2 mb-2 align-items-center option-row border-bottom pb-2';
+        row.innerHTML = `
+            <div class="col-md-4">
+                <input type="text" class="form-control form-control-sm opt-name-input"
+                       name="modifyItemOptionDtoList[${index}].name" value="${data.name}"
+                       placeholder="예: 블랙 / XL" required>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">추가금</span>
+                    <input type="number" class="form-control opt-price-input"
+                           name="modifyItemOptionDtoList[${index}].additionalPrice" value="${data.additionalPrice}" min="0">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">재고</span>
+                    <input type="number" class="form-control opt-stock-input"
+                           name="modifyItemOptionDtoList[${index}].optionStock" value="${data.optionStock}"
+                           min="0" required oninput="updateSumStock()">
+                </div>
+            </div>
+            <div class="col-md-2 text-end">
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeOptionRow(this)">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        container.appendChild(row);
+        updateSumStock();
+    }
+
+    // 2. 옵션 행 삭제 함수
+    function removeOptionRow(button) {
+        const container = document.getElementById('editOptionContainer');
+        // 1. 해당 행 삭제
+        button.closest('.option-row').remove();
+
+        // 2. 남은 모든 행을 찾아서 인덱스 번호를 다시 0부터 부여
+        const rows = container.getElementsByClassName('option-row');
+
+        Array.from(rows).forEach((row, index) => {
+            const inputs = row.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                const name = input.name;
+                if (name && name.includes('modifyItemOptionDtoList')) {
+                    input.name = name.replace(/\[\d+\]/, `[${index}]`);
+                }
+            });
+        });
+
+        // --- 추가된 부분 ---
+        // 3. 만약 다 지웠으면 메시지 표시 및 재고를 0으로 초기화
+        if (rows.length === 0) {
+            container.innerHTML = '<div id="noOptionMsg" class="text-center text-muted small py-2">등록된 옵션이 없습니다.</div>';
+            document.getElementById('editProductStock').value = 0; // 옵션이 없으면 총재고 0
+        } else {
+            updateSumStock(); // 남은 옵션들의 재고 합계 다시 계산
+        }
+    }
+
+
+
+    // 3. 기존 saveChanges 함수 보완
+    function saveChanges() {
+        const formData = new FormData();
+        const name = document.getElementById('editProductName').value;
+        // ... 기존 변수들 수집 ...
+
+        // 옵션 데이터 수집
+        const optionRows = document.querySelectorAll('.option-row');
+        const options = Array.from(optionRows).map(row => {
+            return {
+                name: row.querySelector('input[name*=".name"]').value,
+                additionalPrice: row.querySelector('input[name*=".additionalPrice"]').value,
+                optionStock: row.querySelector('input[name*=".optionStock"]').value
+            };
+        });
+
+
+        // 메인 이미지
+        const mainFile = document.getElementById('mainImageInput').files;
+        if(mainFile) formData.append("mainImage", mainFile);
+
+        // 상세 이미지 (Multiple)
+        const subFiles = document.getElementById('subImageInput').files;
+        for (let i = 0; i < subFiles.length; i++) {
+            formData.append("subImages", subFiles[i]); // 같은 name으로 여러 번 append
+        }
+
+        if (confirm("상품 정보를 수정하시겠습니까?")) {
+            const pData = {
+                productName: name,
+                // ... 기존 데이터 ...,
+                options: options // 수집된 옵션 배열 추가
+            };
+
+            console.log("최종 전송 데이터:", pData);
+            alert("수정이 완료되었습니다.");
+            location.reload();
+        }
+    }
+
+    function applyBulkEdit() {
+        const statusValue = document.getElementById('bulkStatus').value;
+        const discountValue = document.getElementById('bulkDiscount').value;
+
+        // --- 추가된 부분: 체크된 itemNo 수집 ---
+        const checkedBoxes = document.querySelectorAll('tbody .form-check-input:checked');
+        const selectedItemNos = Array.from(checkedBoxes).map(cb => cb.value);
+        const selectedItemsCount = selectedItemNos.length;
+        // ------------------------------------
+
+        if (selectedItemsCount === 0) {
+            alert("수정할 상품을 선택해주세요.");
+            return;
+        }
+
+        if (!statusValue && discountValue === "") {
+            alert("변경할 항목을 최소 하나 이상 선택하거나 입력해주세요.");
+            return;
+        }
+
+        if (confirm(`선택한 ${selectedItemsCount}개의 상품 정보를 일괄 수정하시겠습니까?`)) {
+            // 전송할 최종 데이터 객체
+            const bulkModifyItemDto = {
+                itemNos: selectedItemNos, // 수집된 [101, 102, 103...] 형태의 배열
+                itemStatus: statusValue || null,
+                discountPer: discountValue !== "" ? discountValue : null
+            };
+
+            console.log("서버로 전송할 데이터:", bulkModifyItemDto);
+
+
+            fetch('/seller/item_manage/bulk_modify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // JSON임을 명시
+                },
+                body: JSON.stringify(bulkModifyItemDto) // 객체를 JSON 문자열로 변환
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert("일괄 수정이 완료되었습니다.");
+                        location.reload();
+                    } else {
+                        alert("수정 중 오류가 발생했습니다.");
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }
+
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
