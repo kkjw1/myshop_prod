@@ -33,14 +33,17 @@ spring:
     active: local
 
   datasource:
-    url: jdbc:h2:tcp://localhost/~/myshop
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    url: jdbc:mysql://localhost:3306/myshop?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10   # 12GB 메모리를 Redis/MySQL과 나눠 써야 하니 넉넉하게 잡지 않는 게 안전합니다
+
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: create    # 최초시에만 create, 나머지 validate
     properties:
       hibernate:
         # show_sql: true
@@ -69,7 +72,7 @@ file:
 
 redis:
   ttl:
-    timeout: 20   #단위:초
+    timeout: 200   #단위:초
 
 jwt:
   secret: ${JWT_SECRET}
