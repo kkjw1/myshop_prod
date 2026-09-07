@@ -54,7 +54,7 @@ public class InitDB {
 
     @PostConstruct
     public void init() {
-        initData.dbInit();
+//        initData.dbInit();
     }
 
     @Component
