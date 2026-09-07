@@ -33,17 +33,17 @@ spring:
     active: local
 
   datasource:
-    url: jdbc:mysql://localhost:3306/myshop?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: jdbc:oracle:thin:@(description= (retry_count=20)(retry_delay=3)(address=(protocol=tcps)(port=1522)(host=adb.ap-chuncheon-1.oraclecloud.com))(connect_data=(service_name=g5e032b82f1589c_jwshop_high.adb.oraclecloud.com))(security=(ssl_server_dn_match=yes)))
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: oracle.jdbc.OracleDriver
     hikari:
       maximum-pool-size: 10   # 12GB 메모리를 Redis/MySQL과 나눠 써야 하니 넉넉하게 잡지 않는 게 안전합니다
 
 
   jpa:
     hibernate:
-      ddl-auto: create    # 최초시에만 create, 나머지 validate
+      ddl-auto: validate    # 최초시에만 create, 나머지 validate
     properties:
       hibernate:
         # show_sql: true
