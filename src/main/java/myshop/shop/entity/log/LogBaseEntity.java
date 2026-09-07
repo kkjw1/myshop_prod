@@ -15,5 +15,5 @@ import java.time.LocalDateTime;
 public class LogBaseEntity {
     @CreatedDate
     @Column(updatable = false)
-    private LocalDateTime date;
+    private LocalDateTime logDate;
 }
