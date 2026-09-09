@@ -19,6 +19,7 @@ import myshop.shop.repository.Item.ItemOptionRepository;
 import myshop.shop.repository.Item.ItemRepository;
 import myshop.shop.repository.cart.CartRepository;
 import myshop.shop.repository.seller.SellerRepository;
+import myshop.shop.service.FileService.FileService;
 import myshop.shop.service.ItemImageService.ImagePath;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;

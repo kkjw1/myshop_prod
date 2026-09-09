@@ -1,4 +1,4 @@
-package myshop.shop.service;
+package myshop.shop.service.FileService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Service
+//@Service
 @Slf4j
-public class FileService {
+public class LocalFileService implements FileService {
 
     @Value("${file.path}")
     private String fileDir;
@@ -23,6 +23,7 @@ public class FileService {
     /**
      * 파일명 생성
      */
+    @Override
     public String createStoreName(String fileName) {
         int pos = fileName.lastIndexOf(".");
         String ext = fileName.substring(pos);
@@ -36,6 +37,7 @@ public class FileService {
      * 파일 저장
      * @return storeFileName
      */
+    @Override
     public String storeFile(MultipartFile multipartFile) throws IOException {
         String storeFileName = null;
         if (!multipartFile.isEmpty()) {
@@ -53,6 +55,7 @@ public class FileService {
      * 파일 여러개 저장
      * @return List<storeFileName>
      */
+    @Override
     public List<String> storeFiles(List<MultipartFile> multipartFileList) throws IOException {
         List<String> storeFileNameList = new ArrayList<>();
 
@@ -69,6 +72,7 @@ public class FileService {
     /**
      * 파일 삭제
      */
+    @Override
     public void removeFile(String fileDir) {
         String realPath = fileDir.replace(this.fileDir, exteralFileDir);
         log.info("removeFile Path={}",realPath);

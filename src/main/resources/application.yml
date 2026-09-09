@@ -70,6 +70,12 @@ file:
   path: ${FILE_STORE_PATH}
   exteral-path: ${FILE_EXTERNAL_STORE_PATH}
 
+  oracle:
+    bucket_name: ${BUCKET_NAME}
+    bucket_name_space: ${BUCKET_NAME_SPACE}
+    img_dir: ${IMG_DIR}
+    config_path: ${CONFIG_PATH}
+
 redis:
   ttl:
     timeout: 200   #단위:초

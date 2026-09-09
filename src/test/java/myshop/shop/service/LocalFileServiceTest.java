@@ -1,29 +1,19 @@
 package myshop.shop.service;
 
-import myshop.shop.dto.item.AddItemDto;
-import myshop.shop.dto.item.AddItemOptionDto;
-import myshop.shop.entity.Seller;
-import myshop.shop.entity.item.ItemCategory;
-import myshop.shop.entity.item.ItemStatus;
 import myshop.shop.repository.seller.SellerRepository;
-import org.junit.jupiter.api.BeforeEach;
+import myshop.shop.service.FileService.LocalFileService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-class FileServiceTest {
+class LocalFileServiceTest {
 
-    @Autowired FileService fileService;
+    @Autowired
+    LocalFileService fileService;
     @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired

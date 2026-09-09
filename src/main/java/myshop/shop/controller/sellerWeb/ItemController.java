@@ -9,7 +9,7 @@ import myshop.shop.dto.item.*;
 import myshop.shop.dto.seller.LoginCheckSellerDto;
 import myshop.shop.entity.item.ItemStatus;
 import myshop.shop.repository.Item.ItemRepository;
-import myshop.shop.service.FileService;
+import myshop.shop.service.FileService.FileService;
 import myshop.shop.service.ItemImageService;
 import myshop.shop.service.ItemImageService.ImagePath;
 import myshop.shop.service.SellerService;
