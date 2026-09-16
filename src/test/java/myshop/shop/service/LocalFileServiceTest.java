@@ -89,6 +89,6 @@ class LocalFileServiceTest {
     @Test
     public void removeFileTest() throws Exception {
         //given
-        fileService.removeFile("/shop_image/test.png");
+        fileService.removeFile("/shop_image/test.png", "");
     }
 }

@@ -11,9 +11,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Getter @Setter
-@ToString(of = {"itemNo", "name", "price", "totalStock", "itemStatus", "discountPer", "modifyItemOptionDtoList", "mainImage", "subImages"})
+@ToString(of = {"itemNo", "name", "price", "totalStock", "itemStatus", "discountPer", "modifyItemOptionDtoList",
+        "mainImage", "mainImageUrl", "mainImageName", "subImages", "subImagesInfo", "content"})
 public class ModifyItemDto {
     private Long itemNo;
     private String name;
@@ -26,9 +28,12 @@ public class ModifyItemDto {
     private List<ModifyItemOptionDto> modifyItemOptionDtoList = new ArrayList<>();
 
     private MultipartFile mainImage;
-    private String mainImagePath;
+    private String mainImageUrl;
+    private String mainImageName;
+
     private List<MultipartFile> subImages = new ArrayList<>();
-    private List<String> subImagesPath = new ArrayList<>();
+    private List<Map<String, String>> subImagesInfo = new ArrayList<>();
+
     private String content;
 
     public ModifyItemDto() {

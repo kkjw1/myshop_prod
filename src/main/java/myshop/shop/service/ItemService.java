@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -53,11 +54,46 @@ public class ItemService {
     private final FileService fileService;
     private final ItemImageService itemImageService;
     private final CartRepository cartRepository;
-
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Value("${redis.ttl.timeout}")
     private int timeoutSeconds;
+
+
+    /**
+     * 이미지 저장, addItemDto에 이미지 관련된 값 넣기
+     * 새 상품 등록 폼 -> 상품 등록 완료
+     */
+    public void saveImage(AddItemDto addItemDto) throws IOException {
+        // 이미지 저장
+        Map<String, String> storedMainImage = fileService.storeFile(addItemDto.getMainImage());
+        List<Map<String, String>> storedSubImages = fileService.storeFiles(addItemDto.getSubImages());
+        log.info("storedMainImage={}, storedSubImages={}", storedMainImage, storedSubImages);
+
+        // 이미지 주소, 이미지 이름 삽입
+        addItemDto.setMainImageUrl(storedMainImage.get("imageUrl"));
+        addItemDto.setMainImageName(storedMainImage.get("imageName"));
+        addItemDto.setSubImagesInfo(storedSubImages);
+    }
+
+
+    /**
+     * 이미지 저장, modifyItemDto에 이미지 관련된 값 넣기
+     * 상품 관리 폼 -> 수정 완료
+     */
+    public void saveImage(ModifyItemDto modifyItemDto) throws IOException {
+        // 이미지 저장
+        Map<String, String> storedMainImage = fileService.storeFile(modifyItemDto.getMainImage());
+        List<Map<String, String>> storedSubImages = fileService.storeFiles(modifyItemDto.getSubImages());
+        log.info("storedMainImage={}, storedSubImages={}", storedMainImage, storedSubImages);
+
+        // 이미지 주소, 이미지 이름 삽입
+        modifyItemDto.setMainImageUrl(storedMainImage.get("imageUrl"));
+        modifyItemDto.setMainImageName(storedMainImage.get("imageName"));
+        modifyItemDto.setSubImagesInfo(storedSubImages);
+    }
+
+
     /**
      * 상품 등록
      */
@@ -85,12 +121,12 @@ public class ItemService {
 
         //상품 이미지 저장
         int sortOrder = 1;
-        String mainImagePath = addItemDto.getMainImagePath();
-        itemImageRepository.save(new ItemImage(item, mainImagePath, true, sortOrder++));
+        String mainImageUrl = addItemDto.getMainImageUrl();
+        String mainImageName = addItemDto.getMainImageName();
+        itemImageRepository.save(new ItemImage(item, mainImageUrl, true, sortOrder++, mainImageName));
 
-        List<String> subImagePathList = addItemDto.getSubImagesPath();
-        for (String subImagePath : subImagePathList) {
-            itemImageRepository.save(new ItemImage(item, subImagePath, false, sortOrder++));
+        for (Map<String, String> subImage : addItemDto.getSubImagesInfo()) {
+            itemImageRepository.save(new ItemImage(item, subImage.get("imageUrl"), false, sortOrder++, subImage.get("imageName")));
         }
     }
 
@@ -123,12 +159,12 @@ public class ItemService {
 
         //상품 이미지 저장
         int sortOrder = 1;
-        String mainImagePath = addItemDto.getMainImagePath();
-        itemImageRepository.save(new ItemImage(item, mainImagePath, true, sortOrder++));
+        String mainImageUrl = addItemDto.getMainImageUrl();
+        String mainImageName = addItemDto.getMainImageName();
+        itemImageRepository.save(new ItemImage(item, mainImageUrl, true, sortOrder++, mainImageName));
 
-        List<String> subImagePathList = addItemDto.getSubImagesPath();
-        for (String subImagePath : subImagePathList) {
-            itemImageRepository.save(new ItemImage(item, subImagePath, false, sortOrder++));
+        for (Map<String, String> subImage : addItemDto.getSubImagesInfo()) {
+            itemImageRepository.save(new ItemImage(item, subImage.get("imageUrl"), false, sortOrder++, subImage.get("imageName")));
         }
     }
 
@@ -207,11 +243,17 @@ public class ItemService {
             itemImageRepository.deleteItemImageByItem(item);
             int sort = 1;
             itemImageRepository.save(new ItemImage(itemProxy,
-                    modifyItemDto.getMainImagePath(),
-                    true, sort++));
-            for (String subImagePath : modifyItemDto.getSubImagesPath()) {
+                    modifyItemDto.getMainImageUrl(),
+                    true,
+                    sort++,
+                    modifyItemDto.getMainImageName()));
+            for (Map<String, String> subImagePath : modifyItemDto.getSubImagesInfo()) {
                 itemImageRepository.save(new ItemImage(itemProxy,
-                        subImagePath, false, sort++));
+                        subImagePath.get("imageUrl"),
+                        false,
+                        sort++,
+                        subImagePath.get("imageName"))
+                );
             }
         }
     }
@@ -240,11 +282,11 @@ public class ItemService {
     public boolean removeItem(Long itemNo) {
         // 저장된 이미지 삭제
         ImagePath imagePath = itemImageService.getItemImageByIsMain(itemNo);
-        if (imagePath.getMainPath() != null) {
-            fileService.removeFile(imagePath.getMainPath());
+        if (imagePath.getMainImageUrl() != null) {
+            fileService.removeFile(imagePath.getMainImageUrl(), imagePath.getMainImageName());
         }
-        for (String s : imagePath.getSubPath()) {
-            fileService.removeFile(s);
+        for (Map<String, String> sub : imagePath.getSubInfo()) {
+            fileService.removeFile(sub.get("imageUrl"), sub.get("imageName"));
         }
         Item item = itemRepository.findById(itemNo).orElse(null);
         if (item == null) {

@@ -19,18 +19,20 @@ public class ItemImage extends BaseDateEntity {
     private Item item;
 
     @Column(nullable = false, length = 500)
-    private String imageUrl;    // S3 URL 저장
+    private String imageUrl;    // Oracle 버킷 url 저장
 
     private boolean isMain;     // 대표 이미지 여부
     private int sortOrder;      // 이미지 순서
+    private String imageName;
 
     public ItemImage() {}
 
-    public ItemImage(Item item, String imageUrl, boolean isMain, int sortOrder) {
+    public ItemImage(Item item, String imageUrl, boolean isMain, int sortOrder, String imageName) {
         this.item = item;
         this.imageUrl = imageUrl;
         this.isMain = isMain;
         this.sortOrder = sortOrder;
+        this.imageName = imageName;
     }
 
 

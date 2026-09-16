@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 @Transactional
@@ -61,9 +62,9 @@ class ItemRepositoryTest {
                         new AddItemOptionDto("로고", 3000, 10)
                 ), null, "/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.png", null,
                 List.of(
-                        "/shop_image/0d57c72e-ad5c-463d-b404-93b58fc020e7.png",
-                        "/shop_image/00e766c7-b5b7-46bb-8b9b-50bb5079668b.png",
-                        "/shop_image/1c7e2d70-4ef2-4fd9-862e-40226846215c.png"
+                        Map.of("/shop_image/0d57c72e-ad5c-463d-b404-93b58fc020e7.png", "0d57c72e-ad5c-463d-b404-93b58fc020e7.png"),
+                        Map.of("/shop_image/00e766c7-b5b7-46bb-8b9b-50bb5079668b.png", "00e766c7-b5b7-46bb-8b9b-50bb5079668b.png"),
+                        Map.of("/shop_image/1c7e2d70-4ef2-4fd9-862e-40226846215c.png", "1c7e2d70-4ef2-4fd9-862e-40226846215c.png")
                 ), "상품옵션있음, 추가이미지있음", ItemStatus.판매중, true, 10L));
 
         itemService.saveItemForTest(new AddItemDto(sellerNo, "상품테스트2(품절)", ItemCategory.바지, 50000, 0, 0,
@@ -72,7 +73,7 @@ class ItemRepositoryTest {
                         new AddItemOptionDto("청바지", 10000, 0)
                 ), null, "/shop_image/1736f6e5-e78c-4f29-96d4-621fbfd034d0.png", null,
                 List.of(
-                        "/shop_image/97297b82-81cd-4de7-ba70-bd4e467716df.png"
+                        Map.of("/shop_image/97297b82-81cd-4de7-ba70-bd4e467716df.png", "97297b82-81cd-4de7-ba70-bd4e467716df.png")
                 ), "판매완료", ItemStatus.품절,true, 50L));
 
 
@@ -80,11 +81,11 @@ class ItemRepositoryTest {
         itemService.saveItemForTest(new AddItemDto(sellerNo, "상품테스트3(옵션X)", ItemCategory.아우터, 250000, 20, 0,
                 emptyAddItemOptionDtoList, null, "/shop_image/30537136-0d60-450e-8544-2f9eda4e4800.png", null,
                 List.of(
-                        "/shop_image/b3ba7699-d546-4075-84a9-9b6888049a0c.png"
+                        Map.of("/shop_image/b3ba7699-d546-4075-84a9-9b6888049a0c.png", "b3ba7699-d546-4075-84a9-9b6888049a0c.png")
                 ), "상품옵션없음, 추가이미지있음", ItemStatus.판매중, true, 5L));
 
 
-        List<String> emptySubImageList = new ArrayList<>();
+        List<Map<String, String>> emptySubImageList = new ArrayList<>();
         itemService.saveItemForTest(new AddItemDto(sellerNo, "상품테스트4(추가이미지X)", ItemCategory.신발, 150000, 20, 0,
                 List.of(
                         new AddItemOptionDto("250", 0, 10),

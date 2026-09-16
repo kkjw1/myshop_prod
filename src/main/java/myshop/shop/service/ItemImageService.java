@@ -11,7 +11,9 @@ import myshop.shop.repository.Item.ItemRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -33,17 +35,22 @@ public class ItemImageService {
 
     @Getter
     public static class ImagePath {
-        String mainPath;
-        List<String> subPath = new ArrayList<>();
+        String mainImageUrl;
+        String mainImageName;
+        List<Map<String, String>> subInfo = new ArrayList<>();
 
         public ImagePath(ItemImage main, List<ItemImage> sub) {
             if (main == null) {
-                this.mainPath = null;
+                this.mainImageUrl = null;
             } else {
-                this.mainPath = main.getImageUrl();
+                this.mainImageUrl = main.getImageUrl();
+                this.mainImageName = main.getImageName();
             }
             for (ItemImage itemImage : sub) {
-                this.subPath.add(itemImage.getImageUrl());
+                this.subInfo.add(Map.of(
+                        "imageUrl", itemImage.getImageUrl(),
+                        "imageName", itemImage.getImageName()
+                ));
             }
         }
     }

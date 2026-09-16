@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import static myshop.shop.controller.memberWeb.MemberController.SessionConst.LOGIN_SELLER;
 
@@ -77,8 +78,7 @@ public class ItemController {
         addItemDto.setSellerNo(loginCheckSellerDto.getNo());
 
         // 이미지 저장
-        addItemDto.setMainImagePath(fileService.storeFile(addItemDto.getMainImage()));
-        addItemDto.setSubImagesPath(fileService.storeFiles(addItemDto.getSubImages()));
+        itemService.saveImage(addItemDto);
 
         List<AddItemOptionDto> addItemOptionDtoList = addItemDto.getAddItemOptionDtoList();
 
@@ -119,16 +119,15 @@ public class ItemController {
 
             // 이미지 삭제
             ImagePath imagePath = itemImageService.getItemImageByIsMain(modifyItemDto.getItemNo());
-            if (imagePath.getMainPath() != null) {
-                fileService.removeFile(imagePath.getMainPath());
+            if (imagePath.getMainImageUrl() != null) {
+                fileService.removeFile(imagePath.getMainImageUrl(), imagePath.getMainImageName());
             }
-            for (String s : imagePath.getSubPath()) {
-                fileService.removeFile(s);
+            for (Map<String, String> sub : imagePath.getSubInfo()) {
+                fileService.removeFile(sub.get("imageUrl"), sub.get("imageName"));
             }
 
             // 이미지 저장
-            modifyItemDto.setMainImagePath(fileService.storeFile(modifyItemDto.getMainImage()));
-            modifyItemDto.setSubImagesPath(fileService.storeFiles(modifyItemDto.getSubImages()));
+            itemService.saveImage(modifyItemDto);
         }
 
         itemService.itemModify(modifyItemDto);

@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -79,9 +80,9 @@ class CartServiceTest {
                         new AddItemOptionDto("로고", 3000, 10)
                 ), null, "/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.png", null,
                 List.of(
-                        "/shop_image/0d57c72e-ad5c-463d-b404-93b58fc020e7.png",
-                        "/shop_image/00e766c7-b5b7-46bb-8b9b-50bb5079668b.png",
-                        "/shop_image/1c7e2d70-4ef2-4fd9-862e-40226846215c.png"
+                        Map.of("/shop_image/0d57c72e-ad5c-463d-b404-93b58fc020e7.png", "0d57c72e-ad5c-463d-b404-93b58fc020e7.png"),
+                        Map.of("/shop_image/00e766c7-b5b7-46bb-8b9b-50bb5079668b.png", "00e766c7-b5b7-46bb-8b9b-50bb5079668b.png"),
+                        Map.of("/shop_image/1c7e2d70-4ef2-4fd9-862e-40226846215c.png", "1c7e2d70-4ef2-4fd9-862e-40226846215c.png")
                 ), "상품옵션있음, 추가이미지있음", ItemStatus.판매중, true, 10L));
 
 /*        List<AddItemOptionDto> emptyAddItemOptionDtoList = new ArrayList<>();

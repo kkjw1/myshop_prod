@@ -7,11 +7,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
-@Service
+//@Service
 @Slf4j
 public class LocalFileService implements FileService {
 
@@ -38,15 +36,20 @@ public class LocalFileService implements FileService {
      * @return storeFileName
      */
     @Override
-    public String storeFile(MultipartFile multipartFile) throws IOException {
+    public Map<String, String> storeFile(MultipartFile multipartFile) throws IOException {
         String storeFileName = null;
+        Map<String, String> result = new HashMap<>();
         if (!multipartFile.isEmpty()) {
             String storeName = createStoreName(multipartFile.getOriginalFilename());
             storeFileName = fileDir + storeName;
             log.info("파일 저장: {}", exteralFileDir + storeName);
             multipartFile.transferTo(new File(exteralFileDir + storeName));
+
+            result.put("imageUrl", storeFileName);
+            result.put("imageName", storeName);
         }
-        return storeFileName;
+
+        return result;
     }
 
 
@@ -56,8 +59,8 @@ public class LocalFileService implements FileService {
      * @return List<storeFileName>
      */
     @Override
-    public List<String> storeFiles(List<MultipartFile> multipartFileList) throws IOException {
-        List<String> storeFileNameList = new ArrayList<>();
+    public List<Map<String, String>> storeFiles(List<MultipartFile> multipartFileList) throws IOException {
+        List<Map<String, String>> storeFileNameList = new ArrayList<>();
 
         for (MultipartFile multipartFile : multipartFileList) {
             if (!multipartFile.isEmpty()) {
@@ -73,8 +76,8 @@ public class LocalFileService implements FileService {
      * 파일 삭제
      */
     @Override
-    public void removeFile(String fileDir) {
-        String realPath = fileDir.replace(this.fileDir, exteralFileDir);
+    public void removeFile(String imageUrl, String imageName) {
+        String realPath = imageUrl.replace(this.fileDir, exteralFileDir);
         log.info("removeFile Path={}",realPath);
         File file = new File(realPath);
 
