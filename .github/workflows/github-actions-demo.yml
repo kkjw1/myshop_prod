@@ -3,6 +3,7 @@ name: Deploy to OCI
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:  # 웹 UI 수동 실행 허용
 
 jobs:
   build-and-deploy:
