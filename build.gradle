@@ -83,6 +83,6 @@ dependencies {
     implementation 'com.oracle.oci.sdk:oci-java-sdk-common-httpclient-jersey3:3.95.0'
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+tasks.named('bootJar') {
+    archiveFileName = 'app.jar'
 }
