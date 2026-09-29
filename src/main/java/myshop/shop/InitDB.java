@@ -129,45 +129,78 @@ public class InitDB {
                             new AddItemOptionDto("나이키", 3000, 9),
                             new AddItemOptionDto("흰색", 1000, 15),
                             new AddItemOptionDto("로고", 3000, 20)
-                    ), null, "/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.jpg", null,
+                    ), null,
+                    Map.of(
+                            "imageUrl", "https://ax77cega60fl.objectstorage.ap-chuncheon-1.oci.customer-oci.com/n/ax77cega60fl/b/jwshop-images-bucket/o/item_images%2Fef48c475-88b6-4a5c-8cfc-65ca436c5703.jpg",
+                            "imageName", "item_images/2Fef48c475-88b6-4a5c-8cfc-65ca436c5703.jpg"
+                    ), null,
                     List.of(
-                            Map.of("/shop_image/0d57c72e-ad5c-463d-b404-93b58fc020e7.png", "0d57c72e-ad5c-463d-b404-93b58fc020e7.png"),
-                            Map.of("/shop_image/00e766c7-b5b7-46bb-8b9b-50bb5079668b.png", "00e766c7-b5b7-46bb-8b9b-50bb5079668b.png"),
-                            Map.of("/shop_image/1c7e2d70-4ef2-4fd9-862e-40226846215c.png", "1c7e2d70-4ef2-4fd9-862e-40226846215c.png")
-                    ), "상품옵션있음, 추가이미지있음", ItemStatus.판매중 ,true));
+                            Map.of(
+                                    "imageUrl", "https://ax77cega60fl.objectstorage.ap-chuncheon-1.oci.customer-oci.com/n/ax77cega60fl/b/jwshop-images-bucket/o/item_images%2F436afd8b-e71e-495e-9197-16e2f8eb7715.png",
+                                    "imageName", "item_images/2F436afd8b-e71e-495e-9197-16e2f8eb7715.png"
+                            ),
+                            Map.of(
+                                    "imageUrl", "https://ax77cega60fl.objectstorage.ap-chuncheon-1.oci.customer-oci.com/n/ax77cega60fl/b/jwshop-images-bucket/o/item_images%2Fabdfc871-9bb5-453f-bfb7-59d2af2e5f60.png",
+                                    "imageName", "item_images/2Fabdfc871-9bb5-453f-bfb7-59d2af2e5f60.png"
+                            ),
+                            Map.of(
+                                    "imageUrl", "https://ax77cega60fl.objectstorage.ap-chuncheon-1.oci.customer-oci.com/n/ax77cega60fl/b/jwshop-images-bucket/o/item_images%2Fca96c447-3571-4c7d-88ac-6e8f7d35c757.png",
+                                    "imageName", "item_images/2Fca96c447-3571-4c7d-88ac-6e8f7d35c757.png"
+                            )
+                    ), "상품옵션있음, 추가이미지있음", ItemStatus.판매중, true));
 
             itemService.saveItem(new AddItemDto(sellerNo, "상품테스트2(품절)", ItemCategory.바지, 50000, 0, 0,
                     List.of(
                             new AddItemOptionDto("면바지", 0, 0),
                             new AddItemOptionDto("청바지", 10000, 0)
-                    ), null, "/shop_image/1736f6e5-e78c-4f29-96d4-621fbfd034d0.png", null,
+                    ), null,
+                    Map.of(
+                            "imageUrl", "https://ax77cega60fl.objectstorage.ap-chuncheon-1.oci.customer-oci.com/n/ax77cega60fl/b/jwshop-images-bucket/o/item_images%2F1e26cce2-0c57-4ec3-9e48-6e4ca720093f.png",
+                            "imageName", "item_images/2F1e26cce2-0c57-4ec3-9e48-6e4ca720093f.png"
+                    ), null,
                     List.of(
-                            Map.of("/shop_image/97297b82-81cd-4de7-ba70-bd4e467716df.png", "97297b82-81cd-4de7-ba70-bd4e467716df.png")
-                    ), "판매완료", ItemStatus.품절,true));
-
+                            Map.of(
+                                    "imageUrl", "https://ax77cega60fl.objectstorage.ap-chuncheon-1.oci.customer-oci.com/n/ax77cega60fl/b/jwshop-images-bucket/o/item_images%2F4579bc15-a6da-4785-a96c-ede314e7cd04.png",
+                                    "imageName", "item_images/2F4579bc15-a6da-4785-a96c-ede314e7cd04.png"
+                            )
+                    ), "판매완료", ItemStatus.품절, true));
 
             List<AddItemOptionDto> emptyAddItemOptionDtoList = new ArrayList<>();
             itemService.saveItem(new AddItemDto(sellerNo, "상품테스트3(옵션X)", ItemCategory.아우터, 250000, 20, 0,
-                    emptyAddItemOptionDtoList, null, "/shop_image/30537136-0d60-450e-8544-2f9eda4e4800.png", null,
+                    emptyAddItemOptionDtoList, null,
+                    Map.of(
+                            "imageUrl", "https://ax77cega60fl.objectstorage.ap-chuncheon-1.oci.customer-oci.com/n/ax77cega60fl/b/jwshop-images-bucket/o/item_images%2F38162620-1945-49bd-8c09-067d17633473.png",
+                            "imageName", "item_images/2F38162620-1945-49bd-8c09-067d17633473.png"
+                    ), null,
                     List.of(
-                            Map.of("/shop_image/b3ba7699-d546-4075-84a9-9b6888049a0c.png", "b3ba7699-d546-4075-84a9-9b6888049a0c.png")
+                            Map.of(
+                                    "imageUrl", "https://ax77cega60fl.objectstorage.ap-chuncheon-1.oci.customer-oci.com/n/ax77cega60fl/b/jwshop-images-bucket/o/item_images%2Fc4ac80db-6519-40d2-af51-b65b40dbcea7.png",
+                                    "imageName", "item_images/2Fc4ac80db-6519-40d2-af51-b65b40dbcea7.png"
+                            )
                     ), "상품옵션없음, 추가이미지있음", ItemStatus.판매중, true));
 
 
-/*            List<String> emptySubImageList = new ArrayList<>();
-            itemService.saveItem(new AddItemDto(sellerNo, "상품테스트4(추가이미지X)", ItemCategory.신발, 150000, 10, 0,
+            List<Map<String, String>> emptySubImageList = new ArrayList<>();
+            itemService.saveItem(new AddItemDto(sellerNo, "상품테스트4(추가이미지X)",
+                    ItemCategory.신발, 150000, 10, 0,
                     List.of(
                             new AddItemOptionDto("250", 0, 10),
                             new AddItemOptionDto("260", 10000, 0)
-                    ), null, "/shop_image/b3ecf6ae-140e-4950-81bf-74adce043239.png", null,
-                    emptySubImageList, "상품옵션있음, 추가이미지없음", ItemStatus.판매중,true));
+                    ), null,
+                    Map.of(
+                        "imageUrl", "https://ax77cega60fl.objectstorage.ap-chuncheon-1.oci.customer-oci.com/n/ax77cega60fl/b/jwshop-images-bucket/o/item_images%2F661e3e16-1a15-48de-85d8-98a9d303c118.png",
+                        "imageName", "item_images/2F661e3e16-1a15-48de-85d8-98a9d303c118.png"
+                    ), null, emptySubImageList, "상품옵션있음, 추가이미지없음", ItemStatus.판매중, true));
 
 
             for (int i=0; i<50; i++) {
                 itemService.saveItem(new AddItemDto(sellerNo, "페이징테스트" + i, ItemCategory.신발, i*1000, i, i,
-                        emptyAddItemOptionDtoList, null, "/shop_image/c9cf742d-c0b0-4b8d-9253-cc32823d36db.png", null,
-                        emptySubImageList, "상품옵션없음, 추가이미지없음", true));
-            }*/
+                        emptyAddItemOptionDtoList, null,
+                        Map.of(
+                                "imageUrl", "https://ax77cega60fl.objectstorage.ap-chuncheon-1.oci.customer-oci.com/n/ax77cega60fl/b/jwshop-images-bucket/o/item_images%2F7868b3f0-e2ff-43aa-a10b-996d057202f6.png",
+                                "imageName", "item_images/2F7868b3f0-e2ff-43aa-a10b-996d057202f6.png"
+                        ), null, emptySubImageList, "상품옵션없음, 추가이미지없음", true));
+            }
 
             /**
              * 장바구니 데이터
@@ -185,23 +218,23 @@ public class InitDB {
              */
             List<AddOrderItemDto> addOrderItemDtoList1 = new ArrayList<>();
             addOrderItemDtoList1.add(new AddOrderItemDto(1L, 1L, 1L, 1, null, BigDecimal.valueOf(24300),
-                    "/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.jpg", "상품테스트1", "검정색"));
+                    "https://ax77cega60fl.objectstorage.ap-chuncheon-1.oci.customer-oci.com/n/ax77cega60fl/b/jwshop-images-bucket/o/item_images%2Fef48c475-88b6-4a5c-8cfc-65ca436c5703.jpg", "상품테스트1", "검정색"));
             addOrderItemDtoList1.add(new AddOrderItemDto(3L, null, 3L, 6, null, BigDecimal.valueOf(1500000),
-                    "/shop_image/30537136-0d60-450e-8544-2f9eda4e4800.png", "상품테스트3(옵션X)", ""));
+                    "https://ax77cega60fl.objectstorage.ap-chuncheon-1.oci.customer-oci.com/n/ax77cega60fl/b/jwshop-images-bucket/o/item_images%2F38162620-1945-49bd-8c09-067d17633473.png", "상품테스트3(옵션X)", ""));
             orderService.saveOrder(5L, new AddOrderDto("메인수령인", "010-1234-1234", "12345", "인천광역시 서구",
                     "A아파트", "배송 전 미리 연락 부탁드립니다.", addOrderItemDtoList1, BigDecimal.valueOf(1524300),
                     0, BigDecimal.valueOf(1524300)));
 
             List<AddOrderItemDto> addOrderItemDtoList2 = new ArrayList<>();
             addOrderItemDtoList2.add(new AddOrderItemDto(4L, 7L, 4L, 1, null, BigDecimal.valueOf(150000),
-                    "/shop_image/b3ecf6ae-140e-4950-81bf-74adce043239.png", "상품테스트4(추가이미지X)", "250"));
+                    "https://ax77cega60fl.objectstorage.ap-chuncheon-1.oci.customer-oci.com/n/ax77cega60fl/b/jwshop-images-bucket/o/item_images%2F661e3e16-1a15-48de-85d8-98a9d303c118.png", "상품테스트4(추가이미지X)", "250"));
             orderService.saveOrder(5L, new AddOrderDto("메인수령인", "010-1234-1234", "12345", "인천광역시 서구",
                     "A아파트", "배송 전 미리 연락 부탁드립니다.", addOrderItemDtoList2, BigDecimal.valueOf(150000),
                     0, BigDecimal.valueOf(150000)));
 
             List<AddOrderItemDto> addOrderItemDtoList3 = new ArrayList<>();
             addOrderItemDtoList3.add(new AddOrderItemDto(1L, 1L, 1L, 1, null, BigDecimal.valueOf(24300),
-                    "/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.jpg", "상품테스트1", "검정색"));
+                    "https://ax77cega60fl.objectstorage.ap-chuncheon-1.oci.customer-oci.com/n/ax77cega60fl/b/jwshop-images-bucket/o/item_images%2Fef48c475-88b6-4a5c-8cfc-65ca436c5703.jpg", "상품테스트1", "검정색"));
             orderService.saveOrder(5L, new AddOrderDto("메인수령인", "010-1234-1234", "12345", "인천광역시 서구",
                     "A아파트", "부재 시 문 앞에 놓아주세요.", addOrderItemDtoList3, BigDecimal.valueOf(24300),
                     3000, BigDecimal.valueOf(27300)));
@@ -252,7 +285,7 @@ public class InitDB {
              */
             List<AddOrderItemDto> addOrderItemDtoList4 = new ArrayList<>();
             addOrderItemDtoList4.add(new AddOrderItemDto(5L, 1L, 1L, 2, null, BigDecimal.valueOf(48600),
-                    "/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.jpg", "상품테스트1", "검정색"));
+                    "https://ax77cega60fl.objectstorage.ap-chuncheon-1.oci.customer-oci.com/n/ax77cega60fl/b/jwshop-images-bucket/o/item_images%2Fef48c475-88b6-4a5c-8cfc-65ca436c5703.jpg", "상품테스트1", "검정색"));
             orderService.saveOrder(5L, new AddOrderDto("메인수령인", "010-1234-1234", "12345", "인천광역시 서구",
                     "A아파트", "배송 전 미리 연락 부탁드립니다.", addOrderItemDtoList4, BigDecimal.valueOf(48600),
                     0, BigDecimal.valueOf(48600)));

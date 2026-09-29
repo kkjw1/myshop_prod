@@ -71,8 +71,7 @@ public class ItemService {
         log.info("storedMainImage={}, storedSubImages={}", storedMainImage, storedSubImages);
 
         // 이미지 주소, 이미지 이름 삽입
-        addItemDto.setMainImageUrl(storedMainImage.get("imageUrl"));
-        addItemDto.setMainImageName(storedMainImage.get("imageName"));
+        addItemDto.setMainImageInfo(storedMainImage);
         addItemDto.setSubImagesInfo(storedSubImages);
     }
 
@@ -121,8 +120,8 @@ public class ItemService {
 
         //상품 이미지 저장
         int sortOrder = 1;
-        String mainImageUrl = addItemDto.getMainImageUrl();
-        String mainImageName = addItemDto.getMainImageName();
+        String mainImageUrl = addItemDto.getMainImageInfo().get("imageUrl");
+        String mainImageName = addItemDto.getMainImageInfo().get("imageName");
         itemImageRepository.save(new ItemImage(item, mainImageUrl, true, sortOrder++, mainImageName));
 
         for (Map<String, String> subImage : addItemDto.getSubImagesInfo()) {
@@ -159,8 +158,8 @@ public class ItemService {
 
         //상품 이미지 저장
         int sortOrder = 1;
-        String mainImageUrl = addItemDto.getMainImageUrl();
-        String mainImageName = addItemDto.getMainImageName();
+        String mainImageUrl = addItemDto.getMainImageInfo().get("imageUrl");
+        String mainImageName = addItemDto.getMainImageInfo().get("imageName");
         itemImageRepository.save(new ItemImage(item, mainImageUrl, true, sortOrder++, mainImageName));
 
         for (Map<String, String> subImage : addItemDto.getSubImagesInfo()) {

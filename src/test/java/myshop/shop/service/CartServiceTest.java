@@ -78,7 +78,7 @@ class CartServiceTest {
                         new AddItemOptionDto("나이키", 3000, 10),
                         new AddItemOptionDto("흰색", 1000, 10),
                         new AddItemOptionDto("로고", 3000, 10)
-                ), null, "/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.png", null,
+                ), null, Map.of("/shop_image/8ea0eafb-b1a7-492c-b574-654946184243.png", "8ea0eafb-b1a7-492c-b574-654946184243.png"), null,
                 List.of(
                         Map.of("/shop_image/0d57c72e-ad5c-463d-b404-93b58fc020e7.png", "0d57c72e-ad5c-463d-b404-93b58fc020e7.png"),
                         Map.of("/shop_image/00e766c7-b5b7-46bb-8b9b-50bb5079668b.png", "00e766c7-b5b7-46bb-8b9b-50bb5079668b.png"),

@@ -77,26 +77,6 @@ public class OracleFileService implements FileService {
         }
     }
 
-/*
-    public ObjectStorage getClient() throws IOException {
-        ConfigFile configFile = ConfigFileReader.parse(configPath, "DEFAULT");
-
-        AuthenticationDetailsProvider provider = new ConfigFileAuthenticationDetailsProvider(configFile);
-
-        return ObjectStorageClient.builder()
-                .region(Region.AP_CHUNCHEON_1)
-                .build(provider);
-    }
-
-    public UploadManager getManager(ObjectStorage client) throws Exception {
-        UploadConfiguration configuration = UploadConfiguration.builder()
-                .allowMultipartUploads(true)
-                .allowParallelUploads(true)
-                .build();
-        return new UploadManager(client, configuration);
-    }
-*/
-
 
 
 
@@ -113,10 +93,6 @@ public class OracleFileService implements FileService {
         Map<String, String> result = new HashMap<>();
         String originalFilename = multipartFile.getOriginalFilename();
         String objectName = createStoreName(originalFilename);
-/*        String ext = (originalFilename != null && originalFilename.contains("."))
-                ? originalFilename.substring(originalFilename.lastIndexOf('.'))
-                : "";
-        String objectName = imgDir + "/" + UUID.randomUUID() + ext;*/
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
             PutObjectRequest request = PutObjectRequest.builder()
@@ -140,14 +116,6 @@ public class OracleFileService implements FileService {
         result.put("imageName", objectName);
         return result;
 
-/*        String storeFileName = null;
-        if (!multipartFile.isEmpty()) {
-            String storeName = createStoreName(multipartFile.getOriginalFilename());
-            storeFileName = fileDir + storeName;
-            log.info("파일 저장: {}", exteralFileDir + storeName);
-            multipartFile.transferTo(new File(exteralFileDir + storeName));
-        }
-        return storeFileName;*/
     }
 
     @Override
@@ -173,19 +141,6 @@ public class OracleFileService implements FileService {
                 .build();
 
         client.deleteObject(request);
-        log.info("removeFile={}", fileDir);
-/*        String realPath = fileDir.replace(this.fileDir, exteralFileDir);
-        log.info("removeFile Path={}",realPath);
-        File file = new File(realPath);
-
-        if (file.exists()) {
-            if (file.delete()) {
-                log.info("파일 삭제 성공: {}", realPath);
-            } else {
-                log.info("파일 삭제 실패 (권한 문제 등)");
-            }
-        } else {
-            log.info("파일을 찾을 수 없습니다: {}", realPath);
-        }*/
+        log.info("removeFile={}", imageName);
     }
 }

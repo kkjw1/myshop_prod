@@ -27,11 +27,10 @@ public class AddItemDto {
     private List<AddItemOptionDto> addItemOptionDtoList = new ArrayList<>();
 
     private MultipartFile mainImage;
-    private String mainImageUrl;
-    private String mainImageName;
+    private Map<String, String> mainImageInfo;      // <imageUrl, imageName>
 
     private List<MultipartFile> subImages = new ArrayList<>();
-    private List<Map<String, String>> subImagesInfo = new ArrayList<>();
+    private List<Map<String, String>> subImagesInfo = new ArrayList<>();        // <imageUrl, imageName>
     private String content;
 
     private ItemStatus itemStatus;
@@ -46,7 +45,7 @@ public class AddItemDto {
 
 
     public AddItemDto(Long sellerNo, String name, ItemCategory itemCategory, int price, int totalStock, int discountPer,
-                      List<AddItemOptionDto> addItemOptionDtoList, MultipartFile mainImage, String mainImageUrl,
+                      List<AddItemOptionDto> addItemOptionDtoList, MultipartFile mainImage, Map<String, String> mainImageInfo,
                       List<MultipartFile> subImages, List<Map<String, String>> subImagesInfo, String content, boolean useOptions) {
         this.sellerNo = sellerNo;
         this.name = name;
@@ -56,7 +55,7 @@ public class AddItemDto {
         this.discountPer = BigDecimal.valueOf(discountPer);
         this.addItemOptionDtoList = addItemOptionDtoList;
         this.mainImage = mainImage;
-        this.mainImageUrl = mainImageUrl;
+        this.mainImageInfo = mainImageInfo;
         this.subImages = subImages;
         this.subImagesInfo = subImagesInfo;
         this.content = content;
@@ -65,7 +64,7 @@ public class AddItemDto {
     }
     public AddItemDto(Long sellerNo, String name, ItemCategory itemCategory, BigDecimal price, int totalStock,
                       BigDecimal discountPer, List<AddItemOptionDto> addItemOptionDtoList, MultipartFile mainImage,
-                      String mainImageUrl, List<MultipartFile> subImages, List<Map<String, String>> subImagesInfo,
+                      Map<String, String> mainImageInfo, List<MultipartFile> subImages, List<Map<String, String>> subImagesInfo,
                       String content, boolean useOptions) {
         this.sellerNo = sellerNo;
         this.name = name;
@@ -75,7 +74,7 @@ public class AddItemDto {
         this.discountPer = discountPer;
         this.addItemOptionDtoList = addItemOptionDtoList;
         this.mainImage = mainImage;
-        this.mainImageUrl = mainImageUrl;
+        this.mainImageInfo = mainImageInfo;
         this.subImages = subImages;
         this.subImagesInfo = subImagesInfo;
         this.content = content;
@@ -86,7 +85,7 @@ public class AddItemDto {
 
 
     public AddItemDto(Long sellerNo, String name, ItemCategory itemCategory, int price, int totalStock, int discountPer,
-                      List<AddItemOptionDto> addItemOptionDtoList, MultipartFile mainImage, String mainImageUrl,
+                      List<AddItemOptionDto> addItemOptionDtoList, MultipartFile mainImage, Map<String, String> mainImageInfo,
                       List<MultipartFile> subImages, List<Map<String, String>> subImagesInfo, String content, ItemStatus itemStatus, boolean useOptions) {
         this.sellerNo = sellerNo;
         this.name = name;
@@ -96,7 +95,7 @@ public class AddItemDto {
         this.discountPer = BigDecimal.valueOf(discountPer);
         this.addItemOptionDtoList = addItemOptionDtoList;
         this.mainImage = mainImage;
-        this.mainImageUrl = mainImageUrl;
+        this.mainImageInfo = mainImageInfo;
         this.subImages = subImages;
         this.subImagesInfo = subImagesInfo;
         this.content = content;
@@ -104,7 +103,7 @@ public class AddItemDto {
         this.useOptions = useOptions;
     }
     public AddItemDto(Long sellerNo, String name, ItemCategory itemCategory, BigDecimal price, int totalStock, BigDecimal discountPer,
-                      List<AddItemOptionDto> addItemOptionDtoList, MultipartFile mainImage, String mainImageUrl,
+                      List<AddItemOptionDto> addItemOptionDtoList, MultipartFile mainImage, Map<String, String> mainImageInfo,
                       List<MultipartFile> subImages, List<Map<String, String>> subImagesInfo, String content, ItemStatus itemStatus, boolean useOptions) {
         this.sellerNo = sellerNo;
         this.name = name;
@@ -114,7 +113,7 @@ public class AddItemDto {
         this.discountPer = discountPer;
         this.addItemOptionDtoList = addItemOptionDtoList;
         this.mainImage = mainImage;
-        this.mainImageUrl = mainImageUrl;
+        this.mainImageInfo = mainImageInfo;
         this.subImages = subImages;
         this.subImagesInfo = subImagesInfo;
         this.content = content;
@@ -126,7 +125,7 @@ public class AddItemDto {
 
     // 테스트 전용
     public AddItemDto(Long sellerNo, String name, ItemCategory itemCategory, int price, int totalStock, int discountPer,
-                      List<AddItemOptionDto> addItemOptionDtoList, MultipartFile mainImage, String mainImageUrl, List<MultipartFile> subImages,
+                      List<AddItemOptionDto> addItemOptionDtoList, MultipartFile mainImage, Map<String, String> mainImageInfo, List<MultipartFile> subImages,
                       List<Map<String, String>> subImagesInfo, String content, ItemStatus itemStatus, boolean useOptions, Long viewCount) {
         this.sellerNo = sellerNo;
         this.name = name;
@@ -136,7 +135,7 @@ public class AddItemDto {
         this.discountPer = BigDecimal.valueOf(discountPer);
         this.addItemOptionDtoList = addItemOptionDtoList;
         this.mainImage = mainImage;
-        this.mainImageUrl = mainImageUrl;
+        this.mainImageInfo = mainImageInfo;
         this.subImages = subImages;
         this.subImagesInfo = subImagesInfo;
         this.content = content;
@@ -145,7 +144,7 @@ public class AddItemDto {
         this.viewCount = viewCount;
     }
     public AddItemDto(Long sellerNo, String name, ItemCategory itemCategory, BigDecimal price, int totalStock, BigDecimal discountPer,
-                      List<AddItemOptionDto> addItemOptionDtoList, MultipartFile mainImage, String mainImageUrl,
+                      List<AddItemOptionDto> addItemOptionDtoList, MultipartFile mainImage, Map<String, String> mainImageInfo,
                       List<MultipartFile> subImages, List<Map<String, String>> subImagesInfo, String content, ItemStatus itemStatus,
                       boolean useOptions, Long viewCount) {
         this.sellerNo = sellerNo;
@@ -156,7 +155,7 @@ public class AddItemDto {
         this.discountPer = discountPer;
         this.addItemOptionDtoList = addItemOptionDtoList;
         this.mainImage = mainImage;
-        this.mainImageUrl = mainImageUrl;
+        this.mainImageInfo = mainImageInfo;
         this.subImages = subImages;
         this.subImagesInfo = subImagesInfo;
         this.content = content;
@@ -168,27 +167,27 @@ public class AddItemDto {
 
 
     public AddItemDto(Long sellerNo, String name, ItemCategory itemCategory, int price, int totalStock, int discountPer,
-                      String mainImageUrl, Map<String, String> subImagesInfo, String content, ItemStatus itemStatus) {
+                      Map<String, String> mainImageInfo, Map<String, String> subImagesInfo, String content, ItemStatus itemStatus) {
         this.sellerNo = sellerNo;
         this.name = name;
         this.itemCategory = itemCategory;
         this.price = BigDecimal.valueOf(price);
         this.totalStock = totalStock;
         this.discountPer = BigDecimal.valueOf(discountPer);
-        this.mainImageUrl = mainImageUrl;
+        this.mainImageInfo = mainImageInfo;
         this.subImagesInfo.add(subImagesInfo);
         this.content = content;
         this.itemStatus = itemStatus;
     }
     public AddItemDto(Long sellerNo, String name, ItemCategory itemCategory, BigDecimal price, int totalStock,
-                      BigDecimal discountPer, String mainImageUrl, Map<String, String> subImagesInfo, String content, ItemStatus itemStatus) {
+                      BigDecimal discountPer, Map<String, String> mainImageInfo, Map<String, String> subImagesInfo, String content, ItemStatus itemStatus) {
         this.sellerNo = sellerNo;
         this.name = name;
         this.itemCategory = itemCategory;
         this.price = price;
         this.totalStock = totalStock;
         this.discountPer = discountPer;
-        this.mainImageUrl = mainImageUrl;
+        this.mainImageInfo = mainImageInfo;
         this.subImagesInfo.add(subImagesInfo);
         this.content = content;
         this.itemStatus = itemStatus;
