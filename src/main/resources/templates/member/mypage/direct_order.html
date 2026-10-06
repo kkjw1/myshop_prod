@@ -46,7 +46,7 @@
 
     </style>
 
-    <style th:replace="~{/member/common :: style}">
+    <style th:replace="~{member/common :: style}">
         body { background-color: #f0f1f4; color: #333; }
         .mypage-header { background-color: #fff; border-bottom: 1px solid #ddd; padding: 20px 0; }
 
@@ -184,7 +184,7 @@
 <body>
 
 <!-- 헤더 (공통) -->
-<div class="mypage-header mb-4 text-center" th:replace="~{/member/common :: header}">
+<div class="mypage-header mb-4 text-center" th:replace="~{member/common :: header}">
     <div class="container">
         <div class="top-utility-bar">
             <div class="container d-flex justify-content-end" th:unless="${isLogin}">
@@ -446,7 +446,7 @@
 
 
 
-<footer class="shop-footer" th:replace="~{/shop/common::footer}">
+<footer class="shop-footer" th:replace="~{shop/common::footer}">
     <div class="container">
         <div class="row footer-cs align-items-center">
             <div class="col-md-4">
