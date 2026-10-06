@@ -61,9 +61,9 @@ public class MyShopConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(redisConnectionFactory());
+        template.setConnectionFactory(connectionFactory);
 
         // Key: String 직렬화
         template.setKeySerializer(new StringRedisSerializer());
