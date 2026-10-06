@@ -11,6 +11,7 @@ import myshop.shop.interceptor.LoginCheckMemberInterceptor;
 import myshop.shop.interceptor.LoginCheckSellerInterceptor;
 import myshop.shop.service.JwtService;
 import myshop.shop.service.RedisService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,10 +51,12 @@ public class MyShopConfig implements WebMvcConfigurer {
      * redis 설정
      */
     @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration("localhost", 6379);
-//        config.setPassword(password);   // 인증
-//        config.setDatabase(database);   // DB 인덱스 (0~15)
+    public RedisConnectionFactory redisConnectionFactory(
+            @Value("${spring.data.redis.host}") String host,
+            @Value("${spring.data.redis.port}") int port,
+            @Value("${spring.data.redis.password}") String password) {
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
+        config.setPassword(password);
         return new LettuceConnectionFactory(config);
     }
 
