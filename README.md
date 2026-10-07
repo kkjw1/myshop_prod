@@ -1,3 +1,9 @@
+## 🔗 서비스 접속 주소: [http://jwshop.cloud](http://jwshop.cloud)
+
+> 💡 **테스트용 계정 정보** 
+> - **일반 사용자 계정**: `test` / `test`
+> - **관리자(Seller) 계정**: `test` / `test`
+
 ## 배포 (Deployment)
 
 Oracle Cloud Infrastructure(OCI) 백엔드 배포 환경입니다. 제한된 무료 리소스(1 OCPU / 1GB RAM) 안에서 안정적으로 동작하도록 아키텍처와 설정을 직접 설계·튜닝했습니다.
