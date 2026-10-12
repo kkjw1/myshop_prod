@@ -61,7 +61,7 @@
 <body>
 
 <!-- 헤더 영역 (메인과 동일) -->
-<header th:replace="~{/shop/common :: header}">
+<header th:replace="~{shop/common :: header}">
     <!-- 공통 헤더가 없을 경우를 대비한 원본 헤더 구조 유지 -->
     <div class="top-utility-bar">
         <div class="container d-flex justify-content-end" th:unless="${isLogin}">
@@ -199,7 +199,6 @@
     </div>
 </main>
 
-<!-- 푸터 영역 (메인과 동일) -->
 <footer class="shop-footer" th:replace="~{shop/common :: footer}">
     <div class="container">
         <div class="row footer-cs align-items-center">
@@ -212,7 +211,7 @@
                 <div class="footer-links font-weight-bold">
                     <a href="#">회사소개</a>
                     <a href="#">이용약관</a>
-                    <a href="#" class="text-primary">개인정보처리방침</a>
+                    <a href="#">개인정보처리방침</a>
                     <a href="#">입점문의</a>
                     <a href="#">광고문의</a>
                 </div>
@@ -222,16 +221,25 @@
         <div class="row company-info">
             <div class="col-md-9">
                 <div class="mb-2">
-                    <strong>(주)마이숍(MYSHOP)</strong> | 대표이사: 홍길동 | 서울특별시 강남구 테헤란로 123
+                    <strong>(주)마이숍(MYSHOP)</strong> | 대표이사: KJW | 테스트시 테스트구 테스트 123
                 </div>
                 <div class="mb-2">
-                    사업자등록번호: 123-45-67890 | 통신판매업신고: 2026-서울강남-0123호 | <a href="#" class="text-dark"><u>사업자정보확인</u></a>
+                    사업자등록번호: 123-45-67890 | 통신판매업신고: 2026-테스트-0123호 | <a href="#" class="text-dark"><u>사업자정보확인</u></a>
+                </div>
+                <div class="mb-2">
+                    호스팅 서비스 사업자: Oracle Cloud Infrastructure(OCI)
+                </div>
+                <div class="footer-bottom-text">
+                    테스트은행 채무지급보증 안내: 고객님께서 결제하신 현금에 대해 테스트은행과 채무지급보증 계약을 체결하여 안전거래를 보장하고 있습니다.
                 </div>
             </div>
+
             <div class="col-md-3 text-md-right mt-4 mt-md-0">
                 <div class="footer-icons">
                     <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/174/174848.png" alt="FB"></a>
                     <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" alt="IG"></a>
+                    <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/732/732208.png" alt="App Store"></a>
+                    <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/888/888857.png" alt="Google Play"></a>
                 </div>
                 <p class="mt-3 small text-muted font-italic">Copyright © MYSHOP Inc. 2026 All Rights Reserved.</p>
             </div>
