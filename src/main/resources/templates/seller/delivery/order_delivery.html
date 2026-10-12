@@ -47,12 +47,12 @@
         <div class="sidebar d-none d-md-block" style="width: 250px;">
             <h3 class="text-center mb-4 text-white">📦 판매자 센터</h3>
             <nav class="nav flex-column">
-                <a class="nav-link" href="home.html" th:href="@{/seller}"><i class="fas fa-tachometer-alt me-2"></i> 대시보드</a>
+<!--                <a class="nav-link" href="home.html" th:href="@{/seller}"><i class="fas fa-tachometer-alt me-2"></i> 대시보드</a>-->
                 <a class="nav-link" href="item/item_manage.html" th:href="@{/seller/item_manage}"><i class="fas fa-box me-2"></i> 상품 관리</a>
                 <a class="nav-link" href="delivery/order_delivery.html" th:href="@{/seller/order_delivery}"><i class="fas fa-shopping-cart me-2"></i> 주문/배송</a>
                 <a class="nav-link" href="request/request_manage.html" th:href="@{/seller/request_manage}"><i class="fas fa-undo-alt me-2"></i> 취소/반품 관리</a>
                 <a class="nav-link" href="inquiry/inquiry_manage.html" th:href="@{/seller/inquiry_manage}"><i class="fas fa-comment-dots me-2"></i> 고객 문의</a>
-                <a class="nav-link" href="../home/home.html" th:href="@{/}"><i class="fas fa-sign-out-alt me-2"></i> 로그아웃</a>
+                <a class="nav-link" href="../home/home.html" th:href="@{/seller/logout}"><i class="fas fa-sign-out-alt me-2"></i> 로그아웃</a>
             </nav>
         </div>
     </th:block>
@@ -60,17 +60,15 @@
     <div id="page-content-wrapper" class="flex-grow-1 p-4">
         <header class="mb-4 d-flex justify-content-between align-items-center border-bottom pb-3">
             <h1 class="h3 mb-0 text-dark"><i class="fas fa-truck me-2"></i> 주문/배송 관리</h1>
-            <div class="text-secondary">
+<!--            <div class="text-secondary">
                 <i class="fas fa-user-circle me-1"></i>[판매자]님, 환영합니다!
-                <i class="fas me-1"></i> 로그아웃
-            </div>
+            </div>-->
         </header>
 
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="mb-0" th:text="|총 ${orderDeliveryDtoList.size()}건의 주문 검색 결과|">총 150건의 주문 검색 결과</h5>
             <div class="btn-group">
                 <button class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#batchProcessModal"><i class="fas fa-boxes me-1"></i> 선택 주문 상태 처리</button>
-<!--                <button class="btn btn-outline-success"><i class="fas fa-file-download me-1"></i> 주문 엑셀 다운로드</button>-->
             </div>
         </div>
 
@@ -92,46 +90,35 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="orderDeliveryDto, stat : ${orderDeliveryDtoList}">
-                            <td class="text-center"><input class="form-check-input order-checkbox table-checkbox" type="checkbox" th:data-order-id="${orderDeliveryDto.orderNo}"></td>
-                            <td th:switch="${orderDeliveryDto.orderStatus.name()}">
-                                <span th:case="'결제완료'" class="badge bg-warning text-dark">결제 완료</span>
-                                <span th:case="'처리완료'" class="badge bg-success">처리완료</span>
-<!--                                <span th:case="'상품준비중'" class="badge bg-info">상품 준비 중</span>
-                                <span th:case="'배송중'" class="badge bg-primary">배송 중</span>
-                                <span th:case="'배송완료'" class="badge bg-success">배송 완료</span>
-                                <span th:case="'취소접수'" class="badge bg-danger-subtle text-danger border border-danger">취소 접수</span>
-                                <span th:case="'취소완료'" class="badge bg-danger">취소 완료</span>
-                                <span th:case="'환불완료'" class="badge bg-secondary">환불 완료</span>
-                                <span th:case="*" class="badge bg-dark" th:text="${orderDeliveryDto.orderStatus.name()}">기타</span>-->
-                            </td>
-                            <td class="order-id" th:text="${orderDeliveryDto.orderNo}">20240720-00123</td>
-                            <td th:text="${orderDeliveryDto.orderInfo}">프리미엄 와이드 팬츠 외 1건</td>
-                            <td th:text="|${#numbers.formatDecimal(orderDeliveryDto.totalPrice, 0, 'COMMA', 0, 'POINT')}원|" class="payment-amount">72,000원</td>
-                            <td class="order-date" th:text="${#temporals.format(orderDeliveryDto.orderTime, 'yyyy-MM-dd')}">2024-07-20</td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-outline-secondary btn-manage-order"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#orderDetailModal"
-                                        th:data-order-id="${orderDeliveryDto.orderNo}"
-                                        th:data-memo="${orderDeliveryDto.deliveryRequest}"
-                                > 관리 </button>
-                            </td>
-                        </tr>
+                            <tr th:each="orderDeliveryDto, stat : ${orderDeliveryDtoList}">
+                                <td class="text-center"><input class="form-check-input order-checkbox table-checkbox" type="checkbox" th:data-order-id="${orderDeliveryDto.orderNo}"></td>
+                                <td th:switch="${orderDeliveryDto.orderStatus.name()}">
+                                    <span th:case="'결제완료'" class="badge bg-warning text-dark">결제 완료</span>
+                                    <span th:case="'처리완료'" class="badge bg-success">처리완료</span>
+    <!--                                <span th:case="'상품준비중'" class="badge bg-info">상품 준비 중</span>
+                                    <span th:case="'배송중'" class="badge bg-primary">배송 중</span>
+                                    <span th:case="'배송완료'" class="badge bg-success">배송 완료</span>
+                                    <span th:case="'취소접수'" class="badge bg-danger-subtle text-danger border border-danger">취소 접수</span>
+                                    <span th:case="'취소완료'" class="badge bg-danger">취소 완료</span>
+                                    <span th:case="'환불완료'" class="badge bg-secondary">환불 완료</span>
+                                    <span th:case="*" class="badge bg-dark" th:text="${orderDeliveryDto.orderStatus.name()}">기타</span>-->
+                                </td>
+                                <td class="order-id" th:text="${orderDeliveryDto.orderNo}">20240720-00123</td>
+                                <td th:text="${orderDeliveryDto.orderInfo}">프리미엄 와이드 팬츠 외 1건</td>
+                                <td th:text="|${#numbers.formatDecimal(orderDeliveryDto.totalPrice, 0, 'COMMA', 0, 'POINT')}원|" class="payment-amount">72,000원</td>
+                                <td class="order-date" th:text="${#temporals.format(orderDeliveryDto.orderTime, 'yyyy-MM-dd')}">2024-07-20</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary btn-manage-order"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#orderDetailModal"
+                                            th:data-order-id="${orderDeliveryDto.orderNo}"
+                                            th:data-memo="${orderDeliveryDto.deliveryRequest}"
+                                    > 관리 </button>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
-            </div>
-            <div class="card-footer bg-white d-flex justify-content-center">
-                <nav>
-                    <ul class="pagination mb-0">
-                        <li class="page-item disabled"><a class="page-link" href="#">이전</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">다음</a></li>
-                    </ul>
-                </nav>
             </div>
         </div>
 

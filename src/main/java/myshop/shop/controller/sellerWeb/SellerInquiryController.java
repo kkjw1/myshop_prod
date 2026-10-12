@@ -34,7 +34,6 @@ public class SellerInquiryController {
     @GetMapping("/seller/inquiry_manage")
     public String requestInquiryForm(Pageable pageable, HttpServletRequest request, Model model,
                                      @ModelAttribute SearchInquiryDto searchInquiryDto) {
-        // todo: 판매자 페이지-> 고객 문의 페이지 기능
         LoginCheckSellerDto loginCheckSellerDto = (LoginCheckSellerDto) request.getSession().getAttribute(MemberController.SessionConst.LOGIN_SELLER);
         Long sellerNo = loginCheckSellerDto.getNo();
 

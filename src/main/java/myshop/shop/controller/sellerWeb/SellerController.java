@@ -68,19 +68,27 @@ public class SellerController {
     }
 
 
-    /**
+
+/*    *//**
      * 판매자 대시보드
-     */
+     *//*
     @GetMapping("/seller")
     public String sellerHomeForm() {
         return "seller/home";
-    }
+    }*/
 
 
-    // todo: 추후 삭제 필요
-    @GetMapping("/seller/order_delivery_detail")
-    public String order_delivery_detail() {
-        return "seller/delivery/order_delivery_detail";
+
+    /**
+     * 판매자 로그아웃
+     */
+    @GetMapping("/seller/logout")
+    public String sellerLogout(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        if (session != null) {
+            session.invalidate();
+        }
+        return "redirect:/";
     }
 
 }

@@ -43,7 +43,7 @@ public class ItemController {
     /**
      * 상품 관리 폼 (상품관리메뉴, 페이지, 검색)
      */
-    @GetMapping("/seller/item_manage")
+    @GetMapping({"/seller/item_manage", "/seller"})
     public String itemManageForm(Pageable pageable, SearchItemDto searchItemDto,
                                  HttpServletRequest request, Model model) {
         LoginCheckSellerDto loginCheckSellerDto = (LoginCheckSellerDto) request.getSession().getAttribute(LOGIN_SELLER);
