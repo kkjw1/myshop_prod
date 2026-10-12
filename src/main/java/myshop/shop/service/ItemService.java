@@ -300,7 +300,7 @@ public class ItemService {
 
 
     /**
-     * 메인 페이지 상품들 가져오기
+     * 메인 화면 상품 출력
      */
     public List<MainItemDto> getMainItem(Long limit) {
         List<MainItemDto> mainItemDtoList = itemRepository.findMainItem(limit);
@@ -317,6 +317,20 @@ public class ItemService {
     public static BigDecimal getDiscountedPrice(BigDecimal originPrice, BigDecimal discount) {
         BigDecimal discountPer = discount.divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
         return originPrice.subtract(originPrice.multiply(discountPer).setScale(0, RoundingMode.CEILING));
+    }
+
+
+
+    /**
+     * 상품 검색 화면
+     * 홈 헤더 -> 검색
+     */
+    public Page<MainItemDto> getSearchItem(Pageable pageable, String keyword) {
+        Page<MainItemDto> searchItemList = itemRepository.findSearchItem(pageable, keyword);
+        for (MainItemDto searchItem : searchItemList) {
+            searchItem.setDiscountedPrice(getDiscountedPrice(searchItem.getPrice(), searchItem.getDiscountPer()));
+        }
+        return searchItemList;
     }
 
 
