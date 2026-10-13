@@ -78,7 +78,7 @@ file:
 
 redis:
   ttl:
-    timeout: 200   #단위:초
+    timeout: 20   #단위:초
 
 jwt:
   secret: ${JWT_SECRET}
