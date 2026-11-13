@@ -1,11 +1,17 @@
 package myshop.shop.dto.member;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 
 @Data
 @ToString(of = {"id", "password", "loginCheck"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginMemberDto {
     @NotBlank(message = "아이디가 공백입니다.")
     String id;
@@ -14,15 +20,4 @@ public class LoginMemberDto {
 
     Boolean loginCheck;
 
-    public LoginMemberDto() {
-    }
-
-    public LoginMemberDto(String id) {
-        this.id = id;
-    }
-
-    public LoginMemberDto(String id, String password) {
-        this.id = id;
-        this.password = password;
-    }
 }

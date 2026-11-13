@@ -102,30 +102,49 @@ public class ItemService {
         }
 
         Seller sellerProxy = sellerRepository.getReferenceById(addItemDto.getSellerNo());
-        Item item = new Item(sellerProxy,
-                addItemDto.getName(),
-                addItemDto.getItemCategory(),
-                addItemDto.getPrice(),
-                addItemDto.getTotalStock(),
-                addItemDto.getDiscountPer(),
-                addItemDto.getContent(),
-                addItemDto.getItemStatus());
+        Item item = Item.builder()
+                .seller(sellerProxy)
+                .name(addItemDto.getName())
+                .itemCategory(addItemDto.getItemCategory())
+                .originalPrice(addItemDto.getPrice())
+                .totalStock(addItemDto.getTotalStock())
+                .discountPer(addItemDto.getDiscountPer())
+                .content(addItemDto.getContent())
+                .itemStatus(addItemDto.getItemStatus())
+                .build();
         itemRepository.save(item);
 
         //상품 옵션 저장
         List<AddItemOptionDto> addItemOptionDtoList = addItemDto.getAddItemOptionDtoList();
         for (AddItemOptionDto addItemOptionDto : addItemOptionDtoList) {
-            itemOptionRepository.save(new ItemOption(item, addItemOptionDto.getName(), addItemOptionDto.getAdditionalPrice(), addItemOptionDto.getOptionStock()));
+            itemOptionRepository.save(ItemOption.builder()
+                    .item(item)
+                    .name(addItemOptionDto.getName())
+                    .additionalPrice(addItemOptionDto.getAdditionalPrice())
+                    .optionStock(addItemOptionDto.getOptionStock())
+                    .build());
         }
 
         //상품 이미지 저장
         int sortOrder = 1;
         String mainImageUrl = addItemDto.getMainImageInfo().get("imageUrl");
         String mainImageName = addItemDto.getMainImageInfo().get("imageName");
-        itemImageRepository.save(new ItemImage(item, mainImageUrl, true, sortOrder++, mainImageName));
+        itemImageRepository.save(ItemImage.builder()
+                .item(item)
+                .imageUrl(mainImageUrl)
+                .isMain(true)
+                .sortOrder(sortOrder++)
+                .imageName(mainImageName)
+                .build());
 
         for (Map<String, String> subImage : addItemDto.getSubImagesInfo()) {
-            itemImageRepository.save(new ItemImage(item, subImage.get("imageUrl"), false, sortOrder++, subImage.get("imageName")));
+            itemImageRepository.save(ItemImage.builder()
+                    .item(item)
+                    .imageUrl(subImage.get("imageUrl"))
+                    .isMain(false)
+                    .sortOrder(sortOrder++)
+                    .imageName(subImage.get("imageName"))
+                    .build());
         }
     }
 
@@ -139,31 +158,50 @@ public class ItemService {
         }
 
         Seller sellerProxy = sellerRepository.getReferenceById(addItemDto.getSellerNo());
-        Item item = new Item(sellerProxy,
-                addItemDto.getName(),
-                addItemDto.getItemCategory(),
-                addItemDto.getPrice(),
-                addItemDto.getTotalStock(),
-                addItemDto.getDiscountPer(),
-                addItemDto.getContent(),
-                addItemDto.getItemStatus(),
-                addItemDto.getViewCount());
+        Item item = Item.builder()
+                .seller(sellerProxy)
+                .name(addItemDto.getName())
+                .itemCategory(addItemDto.getItemCategory())
+                .originalPrice(addItemDto.getPrice())
+                .totalStock(addItemDto.getTotalStock())
+                .discountPer(addItemDto.getDiscountPer())
+                .content(addItemDto.getContent())
+                .itemStatus(addItemDto.getItemStatus())
+                .viewCount(addItemDto.getViewCount())
+                .build();
         itemRepository.save(item);
 
         //상품 옵션 저장
         List<AddItemOptionDto> addItemOptionDtoList = addItemDto.getAddItemOptionDtoList();
         for (AddItemOptionDto addItemOptionDto : addItemOptionDtoList) {
-            itemOptionRepository.save(new ItemOption(item, addItemOptionDto.getName(), addItemOptionDto.getAdditionalPrice(), addItemOptionDto.getOptionStock()));
+            itemOptionRepository.save(ItemOption.builder()
+                    .item(item)
+                    .name(addItemOptionDto.getName())
+                    .additionalPrice(addItemOptionDto.getAdditionalPrice())
+                    .optionStock(addItemOptionDto.getOptionStock())
+                    .build());
         }
 
         //상품 이미지 저장
         int sortOrder = 1;
         String mainImageUrl = addItemDto.getMainImageInfo().get("imageUrl");
         String mainImageName = addItemDto.getMainImageInfo().get("imageName");
-        itemImageRepository.save(new ItemImage(item, mainImageUrl, true, sortOrder++, mainImageName));
+        itemImageRepository.save(ItemImage.builder()
+                .item(item)
+                .imageUrl(mainImageUrl)
+                .isMain(true)
+                .sortOrder(sortOrder++)
+                .imageName(mainImageName)
+                .build());
 
         for (Map<String, String> subImage : addItemDto.getSubImagesInfo()) {
-            itemImageRepository.save(new ItemImage(item, subImage.get("imageUrl"), false, sortOrder++, subImage.get("imageName")));
+            itemImageRepository.save(ItemImage.builder()
+                    .item(item)
+                    .imageUrl(subImage.get("imageUrl"))
+                    .isMain(false)
+                    .sortOrder(sortOrder++)
+                    .imageName(subImage.get("imageName"))
+                    .build());
         }
     }
 
@@ -231,27 +269,33 @@ public class ItemService {
         }
 
         for (ModifyItemOptionDto modifyItemOptionDto : modifyItemDto.getModifyItemOptionDtoList()) {
-            itemOptionRepository.save(new ItemOption(itemProxy,
-                    modifyItemOptionDto.getName(),
-                    modifyItemOptionDto.getAdditionalPrice(),
-                    modifyItemOptionDto.getOptionStock()));
+            itemOptionRepository.save(ItemOption.builder()
+                    .item(itemProxy)
+                    .name(modifyItemOptionDto.getName())
+                    .additionalPrice(modifyItemOptionDto.getAdditionalPrice())
+                    .optionStock(modifyItemOptionDto.getOptionStock())
+                    .build());
         }
 
         // 수정한 값 있으면 ItemImage 삭제 후, 데이터 넣기
         if (checkChangeImage(modifyItemDto.getMainImage(), modifyItemDto.getSubImages())) {
             itemImageRepository.deleteItemImageByItem(item);
             int sort = 1;
-            itemImageRepository.save(new ItemImage(itemProxy,
-                    modifyItemDto.getMainImageUrl(),
-                    true,
-                    sort++,
-                    modifyItemDto.getMainImageName()));
+            itemImageRepository.save(ItemImage.builder()
+                    .item(itemProxy)
+                    .imageUrl(modifyItemDto.getMainImageUrl())
+                    .isMain(true)
+                    .sortOrder(sort++)
+                    .imageName(modifyItemDto.getMainImageName())
+                    .build());
             for (Map<String, String> subImagePath : modifyItemDto.getSubImagesInfo()) {
-                itemImageRepository.save(new ItemImage(itemProxy,
-                        subImagePath.get("imageUrl"),
-                        false,
-                        sort++,
-                        subImagePath.get("imageName"))
+                itemImageRepository.save(ItemImage.builder()
+                        .item(itemProxy)
+                        .imageUrl(subImagePath.get("imageUrl"))
+                        .isMain(false)
+                        .sortOrder(sort++)
+                        .imageName(subImagePath.get("imageName"))
+                        .build()
                 );
             }
         }

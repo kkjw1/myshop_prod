@@ -1,6 +1,9 @@
 package myshop.shop.dto.cancelRequest;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import myshop.shop.entity.cancelRequest.CancelReasonCode;
@@ -13,6 +16,9 @@ import java.math.BigDecimal;
 @Getter @Setter
 @ToString(of = {"no", "memberNo", "memberName", "itemName", "optionName", "cancelReasonCode", "returnReasonCode", "reasonDetail",
 "price", "refundPrice", "cancelRequestStatus", "returnRequestStatus", "decisionReason"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SellerManageRequestDto {
     /**
      * 요청번호
@@ -39,6 +45,4 @@ public class SellerManageRequestDto {
     private ReturnRequestStatus returnRequestStatus;
     private String decisionReason;
 
-    public SellerManageRequestDto() {
-    }
 }

@@ -1,6 +1,7 @@
 package myshop.shop.entity.order;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import myshop.shop.entity.BaseDateEntity;
 import myshop.shop.entity.orderItem.OrderItem;
@@ -31,7 +32,6 @@ public class Order extends BaseDateEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<OrderItem> orderItemList = new ArrayList<>();
 
-
     private String recipientName;
     private String recipientPhone;
     private String postcode;
@@ -44,6 +44,7 @@ public class Order extends BaseDateEntity {
     public Order() {
     }
 
+    @Builder
     public Order(Member member, OrderStatus orderStatus, BigDecimal totalPrice, String recipientName,
                  String recipientPhone, String postcode, String roadAddress, String detailAddress, String deliveryRequest, int deliveryFee) {
         this.member = member;

@@ -33,12 +33,14 @@ public class ReviewService {
      */
     public void saveReview(SaveReviewDto saveReviewDto) {
         Item itemProxy = itemRepository.getReferenceById(saveReviewDto.getItemNo());
-        reviewRepository.save(new Review(itemProxy,
-                saveReviewDto.getMemberNo(),
-                saveReviewDto.getOptionName(),
-                saveReviewDto.getCount(),
-                saveReviewDto.getScore(),
-                saveReviewDto.getContent()));
+        reviewRepository.save(Review.builder()
+                .item(itemProxy)
+                .memberNo(saveReviewDto.getMemberNo())
+                .optionName(saveReviewDto.getOptionName())
+                .count(saveReviewDto.getCount())
+                .score(saveReviewDto.getScore())
+                .content(saveReviewDto.getContent())
+                .build());
 
         OrderItem orderItem = orderItemRepository.findById(saveReviewDto.getOrderItemNo()).orElse(null);
         if (orderItem != null) {

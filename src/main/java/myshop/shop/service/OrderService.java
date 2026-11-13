@@ -44,35 +44,37 @@ public class OrderService {
         Member memberProxy = memberRepository.getReferenceById(memberNo);
 
         // Order 저장
-        Order savedOrder = orderRepository.save(new Order(memberProxy,
-                OrderStatus.결제완료,
-                addOrderDto.getTotalOrderPrice(),
-                addOrderDto.getRecipientName(),
-                addOrderDto.getPhoneNumber(),
-                addOrderDto.getPostcode(),
-                addOrderDto.getRoadAddress(),
-                addOrderDto.getDetailAddress(),
-                addOrderDto.getDeliveryRequest(),
-                addOrderDto.getDeliveryFee()));
+        Order savedOrder = orderRepository.save(Order.builder()
+                .member(memberProxy)
+                .orderStatus(OrderStatus.결제완료)
+                .totalPrice(addOrderDto.getTotalOrderPrice())
+                .recipientName(addOrderDto.getRecipientName())
+                .recipientPhone(addOrderDto.getPhoneNumber())
+                .postcode(addOrderDto.getPostcode())
+                .roadAddress(addOrderDto.getRoadAddress())
+                .detailAddress(addOrderDto.getDetailAddress())
+                .deliveryRequest(addOrderDto.getDeliveryRequest())
+                .deliveryFee(addOrderDto.getDeliveryFee())
+                .build());
 
 
         // Delivery, OrderItem 저장
         List<AddOrderItemDto> addOrderItemDtoList = addOrderDto.getAddOrderItemDtoList();
 
         for (AddOrderItemDto addOrderItemDto : addOrderItemDtoList) {
-            Delivery savedDelivery = deliveryRepository.save(new Delivery(null,
-                    null,
-                    DeliveryStatus.상품준비중));
+            Delivery savedDelivery = deliveryRepository.save(Delivery.builder().deliveryStatus(DeliveryStatus.상품준비중).build());
             Item itemProxy = itemRepository.getReferenceById(addOrderItemDto.getItemNo());
-            OrderItem orderItem = new OrderItem(savedOrder,
-                    itemProxy,
-                    savedDelivery,
-                    addOrderItemDto.getCount(),
-                    addOrderItemDto.getTotalPrice(),
-                    addOrderItemDto.getImageUrl(),
-                    addOrderItemDto.getItemName(),
-                    addOrderItemDto.getOptionName(),
-                    OrderItemStatus.상품준비중);
+            OrderItem orderItem = OrderItem.builder()
+                    .order(savedOrder)
+                    .item(itemProxy)
+                    .delivery(savedDelivery)
+                    .count(addOrderItemDto.getCount())
+                    .price(addOrderItemDto.getTotalPrice())
+                    .imageUrl(addOrderItemDto.getImageUrl())
+                    .itemName(addOrderItemDto.getItemName())
+                    .optionName(addOrderItemDto.getOptionName())
+                    .orderItemStatus(OrderItemStatus.상품준비중)
+                    .build();
             orderItem.updateOrder(savedOrder);
             orderItemRepository.save(orderItem);
         }

@@ -1,6 +1,9 @@
 package myshop.shop.dto.order;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -11,6 +14,9 @@ import java.util.List;
 @Getter @Setter
 @ToString(of = {"recipientName", "phoneNumber", "postcode", "roadAddress", "detailAddress",
         "deliveryRequest", "addOrderItemDtoList", "totalProductPrice", "deliveryFee", "totalOrderPrice"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddOrderDto {      // 결제할 때, 주문 상세 내역을 나타낼 때 사용 됨
     /**
      * 배송지 내용
@@ -39,6 +45,7 @@ public class AddOrderDto {      // 결제할 때, 주문 상세 내역을 나타
      * 7. 상품 이름
      * 8. 옵션 이름
      */
+    @Builder.Default
     private List<AddOrderItemDto> addOrderItemDtoList = new ArrayList<>();
 
     /**
@@ -51,20 +58,4 @@ public class AddOrderDto {      // 결제할 때, 주문 상세 내역을 나타
     private int deliveryFee;
     private BigDecimal totalOrderPrice;
 
-
-    public AddOrderDto() {
-    }
-
-    public AddOrderDto(String recipientName, String phoneNumber, String postcode, String roadAddress, String detailAddress, String deliveryRequest, List<AddOrderItemDto> addOrderItemDtoList, BigDecimal totalProductPrice, int deliveryFee, BigDecimal totalOrderPrice) {
-        this.recipientName = recipientName;
-        this.phoneNumber = phoneNumber;
-        this.postcode = postcode;
-        this.roadAddress = roadAddress;
-        this.detailAddress = detailAddress;
-        this.deliveryRequest = deliveryRequest;
-        this.addOrderItemDtoList = addOrderItemDtoList;
-        this.totalProductPrice = totalProductPrice;
-        this.deliveryFee = deliveryFee;
-        this.totalOrderPrice = totalOrderPrice;
-    }
 }

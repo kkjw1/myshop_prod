@@ -1,6 +1,7 @@
 package myshop.shop.entity.delivery;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import myshop.shop.entity.BaseDateEntity;
 import myshop.shop.entity.orderItem.OrderItem;
@@ -19,13 +20,13 @@ public class Delivery extends BaseDateEntity {
     @Enumerated(EnumType.STRING)
     private DeliveryStatus deliveryStatus;
 
-
     @OneToOne(mappedBy = "delivery", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private OrderItem orderItem;
 
     public Delivery() {
     }
 
+    @Builder
     public Delivery(String courier, String trackingNumber, DeliveryStatus deliveryStatus) {
         this.courier = courier;
         this.trackingNumber = trackingNumber;

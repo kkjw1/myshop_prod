@@ -1,11 +1,17 @@
 package myshop.shop.dto.address;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import myshop.shop.entity.Address;
 
 @Getter @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateAddressDto {
     private Long addressNo;
     private String addressName;
@@ -18,18 +24,6 @@ public class UpdateAddressDto {
     @NotBlank(message = "주소가 비어있습니다.")
     private String roadAddress;
     private String detailAddress;
-
-    public UpdateAddressDto() {
-    }
-
-    public UpdateAddressDto(String addressName, String recipientName, String phoneNumber, String postcode, String roadAddress, String detailAddress) {
-        this.addressName = addressName;
-        this.recipientName = recipientName;
-        this.phoneNumber = phoneNumber;
-        this.postcode = postcode;
-        this.roadAddress = roadAddress;
-        this.detailAddress = detailAddress;
-    }
 
     public UpdateAddressDto(Address address) {
         this.addressNo = address.getNo();

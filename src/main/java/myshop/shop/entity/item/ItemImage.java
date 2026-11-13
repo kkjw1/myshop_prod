@@ -1,6 +1,7 @@
 package myshop.shop.entity.item;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import myshop.shop.entity.BaseDateEntity;
 
@@ -27,6 +28,7 @@ public class ItemImage extends BaseDateEntity {
 
     public ItemImage() {}
 
+    @Builder
     public ItemImage(Item item, String imageUrl, boolean isMain, int sortOrder, String imageName) {
         this.item = item;
         this.imageUrl = imageUrl;
@@ -34,7 +36,6 @@ public class ItemImage extends BaseDateEntity {
         this.sortOrder = sortOrder;
         this.imageName = imageName;
     }
-
 
     //=============연관관계 편의 메서드=================
     public void addItem(Item item) {

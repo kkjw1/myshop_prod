@@ -1,6 +1,7 @@
 package myshop.shop.entity.item;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import myshop.shop.entity.BaseDateEntity;
 import myshop.shop.entity.Cart;
@@ -34,12 +35,7 @@ public class ItemOption extends BaseDateEntity {
     public ItemOption() {
     }
 
-    public ItemOption(Item item, String name, int additionalPrice, int optionStock) {
-        this.item = item;
-        this.name = name;
-        this.additionalPrice = BigDecimal.valueOf(additionalPrice);
-        this.optionStock = optionStock;
-    }
+    @Builder
     public ItemOption(Item item, String name, BigDecimal additionalPrice, int optionStock) {
         this.item = item;
         this.name = name;

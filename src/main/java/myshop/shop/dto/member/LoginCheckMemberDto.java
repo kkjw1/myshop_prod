@@ -1,6 +1,9 @@
 package myshop.shop.dto.member;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import jakarta.servlet.http.HttpSession;
 import lombok.Getter;
 import lombok.ToString;
@@ -11,19 +14,13 @@ import static myshop.shop.controller.memberWeb.MemberController.SessionConst.LOG
 
 @Getter
 @ToString(of = {"no", "id", "name"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginCheckMemberDto {
     private Long no;
     private String id;
     private String name;
-
-    public LoginCheckMemberDto() {
-    }
-
-    public LoginCheckMemberDto(Long no, String id, String name) {
-        this.no = no;
-        this.id = id;
-        this.name = name;
-    }
 
     public LoginCheckMemberDto(Member member) {
         this.no = member.getNo();

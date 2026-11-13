@@ -46,12 +46,15 @@ public class ReturnRequestService {
 
         orderItem.updateOrderItemStatus(OrderItemStatus.반품접수);
 
-        ReturnRequest saveReturnRequest = new ReturnRequest(orderItem, memberProxy,
-                saveReturnRequestDto.getCount(),
-                saveReturnRequestDto.getReturnReasonCode(),
-                saveReturnRequestDto.getReasonDetail(),
-                saveReturnRequestDto.getPrice(),
-                ReturnRequestStatus.요청);
+        ReturnRequest saveReturnRequest = ReturnRequest.builder()
+                .orderItem(orderItem)
+                .member(memberProxy)
+                .count(saveReturnRequestDto.getCount())
+                .returnReasonCode(saveReturnRequestDto.getReturnReasonCode())
+                .reasonDetail(saveReturnRequestDto.getReasonDetail())
+                .price(saveReturnRequestDto.getPrice())
+                .returnRequestStatus(ReturnRequestStatus.요청)
+                .build();
 
         returnRequestRepository.save(saveReturnRequest);
 
@@ -85,8 +88,13 @@ public class ReturnRequestService {
         }
         else if (requestDecisionDto.getAction().equals("승인") && returnRequest != null) {
             returnRequest.updateReturnRequestStatus(ReturnRequestStatus.승인);
-            refundRepository.save(new Refund(null, returnRequest, requestDecisionDto.getTotalPrice(),
-                    requestDecisionDto.getDeliveryFee(), requestDecisionDto.getRefundPrice(), RefundStatus.진행중));
+            refundRepository.save(Refund.builder()
+                    .returnRequest(returnRequest)
+                    .deliveryFee(requestDecisionDto.getTotalPrice())
+                    .totalPrice(requestDecisionDto.getDeliveryFee())
+                    .refundPrice(requestDecisionDto.getRefundPrice())
+                    .refundStatus(RefundStatus.진행중)
+                    .build());
         }
         else if (requestDecisionDto.getAction().equals("완료") && returnRequest != null) {
             returnRequest.updateReturnRequestStatus(ReturnRequestStatus.완료);

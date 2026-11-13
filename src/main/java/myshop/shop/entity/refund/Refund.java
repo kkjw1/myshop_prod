@@ -1,7 +1,7 @@
 package myshop.shop.entity.refund;
 
-
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import myshop.shop.entity.BaseDateEntity;
 import myshop.shop.entity.cancelRequest.CancelRequest;
@@ -36,6 +36,7 @@ public class Refund extends BaseDateEntity {
     public Refund() {
     }
 
+    @Builder
     public Refund(CancelRequest cancelRequest, ReturnRequest returnRequest, BigDecimal deliveryFee, BigDecimal totalPrice, BigDecimal refundPrice, RefundStatus refundStatus) {
         this.cancelRequest = cancelRequest;
         this.returnRequest = returnRequest;

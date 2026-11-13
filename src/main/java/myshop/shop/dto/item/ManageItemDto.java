@@ -1,6 +1,9 @@
 package myshop.shop.dto.item;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Setter;
 import lombok.ToString;
 import myshop.shop.entity.item.Item;
@@ -11,6 +14,9 @@ import java.time.LocalDateTime;
 
 @Getter @Setter
 @ToString(of = {"itemNo", "mainImagePath", "name", "price", "totalStock", "itemStatus", "createdDate"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ManageItemDto {
     private Long itemNo;
     private String mainImagePath;
@@ -19,10 +25,6 @@ public class ManageItemDto {
     private int totalStock;
     private ItemStatus itemStatus;
     private LocalDateTime createdDate;
-
-
-    public ManageItemDto() {
-    }
 
     public ManageItemDto(Item item) {
         this.itemNo = item.getNo();
@@ -33,22 +35,4 @@ public class ManageItemDto {
         this.createdDate = item.getCreatedDate();
     }
 
-    public ManageItemDto(Long itemNo, String mainImagePath, String name, int price, int totalStock, ItemStatus itemStatus, LocalDateTime createdDate) {
-        this.itemNo = itemNo;
-        this.mainImagePath = mainImagePath;
-        this.name = name;
-        this.price = BigDecimal.valueOf(price);
-        this.totalStock = totalStock;
-        this.itemStatus = itemStatus;
-        this.createdDate = createdDate;
-    }
-    public ManageItemDto(Long itemNo, String mainImagePath, String name, BigDecimal price, int totalStock, ItemStatus itemStatus, LocalDateTime createdDate) {
-        this.itemNo = itemNo;
-        this.mainImagePath = mainImagePath;
-        this.name = name;
-        this.price = price;
-        this.totalStock = totalStock;
-        this.itemStatus = itemStatus;
-        this.createdDate = createdDate;
-    }
 }

@@ -1,6 +1,7 @@
 package myshop.shop.entity.review;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import myshop.shop.entity.BaseDateEntity;
 import myshop.shop.entity.item.Item;
@@ -28,6 +29,7 @@ public class Review extends BaseDateEntity {
     public Review() {
     }
 
+    @Builder
     public Review(Item item, Long memberNo, String optionName, int count, Long score, String content) {
         this.item = item;
         this.memberNo = memberNo;

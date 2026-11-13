@@ -1,11 +1,17 @@
 package myshop.shop.dto.review;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 @Getter @Setter
 @ToString
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SaveReviewDto {
     private Long itemNo;
     private Long orderItemNo;
@@ -15,6 +21,4 @@ public class SaveReviewDto {
     private String optionName;
     private String content;
 
-    public SaveReviewDto() {
-    }
 }

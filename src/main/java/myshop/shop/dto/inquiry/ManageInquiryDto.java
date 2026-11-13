@@ -1,6 +1,9 @@
 package myshop.shop.dto.inquiry;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import myshop.shop.entity.inquiry.InquiryCategory;
@@ -10,6 +13,9 @@ import java.time.LocalDateTime;
 
 @Getter @Setter
 @ToString(of = {"inquiryNo", "inquiryCategory", "inquiryStatus", "inquiryCreateDate", "title", "content", "itemName", "itemOptionName", "answerContent"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ManageInquiryDto {
     private Long inquiryNo;
     private InquiryCategory inquiryCategory;
@@ -22,6 +28,4 @@ public class ManageInquiryDto {
     private String itemOptionName;
     private String answerContent;
 
-    public ManageInquiryDto() {
-    }
 }

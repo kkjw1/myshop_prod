@@ -47,8 +47,16 @@ public class MemberService {
 
         String passwordEncode = passwordEncoder.encode(signUpMemberDto.getPassword());
 
-        return memberRepository.save(new Member(signUpMemberDto.getId(), signUpMemberDto.getEmail(), passwordEncode, signUpMemberDto.getName(),
-                signUpMemberDto.getTelecom(), signUpMemberDto.getPhoneNumber(), signUpMemberDto.getGender(), MemberLevel.normal));
+        return memberRepository.save(Member.builder()
+                .id(signUpMemberDto.getId())
+                .email(signUpMemberDto.getEmail())
+                .password(passwordEncode)
+                .name(signUpMemberDto.getName())
+                .telecom(signUpMemberDto.getTelecom())
+                .phoneNumber(signUpMemberDto.getPhoneNumber())
+                .gender(signUpMemberDto.getGender())
+                .memberLevel(MemberLevel.normal)
+                .build());
     }
 
 
@@ -69,7 +77,7 @@ public class MemberService {
     public Member login(LoginMemberDto loginMemberDto) {
         Member member = memberRepository.findById(loginMemberDto.getId()).orElse(null);
         if (member != null && passwordEncoder.matches(loginMemberDto.getPassword(), member.getPassword())) {
-            loginLogRepository.save(new LoginLog(loginMemberDto.getId()));
+            loginLogRepository.save(LoginLog.builder().id(loginMemberDto.getId()).build());
             return member;
         }
         return null;

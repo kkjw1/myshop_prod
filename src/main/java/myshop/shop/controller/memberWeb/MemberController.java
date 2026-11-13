@@ -68,7 +68,7 @@ public class MemberController {
      */
     @GetMapping("login/{loginId}")
     public String loginForm2(@PathVariable("loginId") String id, Model model) {
-        model.addAttribute("loginMemberDto", new LoginMemberDto(id));
+        model.addAttribute("loginMemberDto", LoginMemberDto.builder().id(id).build());
         return "member/login";
     }
 
@@ -126,7 +126,11 @@ public class MemberController {
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
 
 
-        LoginCheckMemberDto loginCheckMemberDto = new LoginCheckMemberDto(login.getNo(), login.getId(), login.getName());
+        LoginCheckMemberDto loginCheckMemberDto = LoginCheckMemberDto.builder()
+                .no(login.getNo())
+                .id(login.getId())
+                .name(login.getName())
+                .build();
         // Spring Security의 Authentication
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 loginCheckMemberDto, null, List.of(new SimpleGrantedAuthority("MEMBER_" + loginCheckMemberDto.getId()))
@@ -409,7 +413,7 @@ public class MemberController {
             return "redirect:/login";
         }
 
-        model.addAttribute("resetPasswordMemberDto", new ResetPasswordMemberDto(memberId));
+        model.addAttribute("resetPasswordMemberDto", ResetPasswordMemberDto.builder().id(memberId).build());
         return "member/reset_password";
     }
 

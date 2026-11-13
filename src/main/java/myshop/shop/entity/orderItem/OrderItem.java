@@ -1,6 +1,7 @@
 package myshop.shop.entity.orderItem;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import myshop.shop.entity.BaseDateEntity;
 import myshop.shop.entity.delivery.Delivery;
@@ -45,6 +46,7 @@ public class OrderItem extends BaseDateEntity {
     public OrderItem() {
     }
 
+    @Builder
     public OrderItem(Order order, Item item, Delivery delivery, int count, BigDecimal price, String imageUrl, String itemName, String optionName, OrderItemStatus orderItemStatus) {
         this.order = order;
         this.item = item;
@@ -57,19 +59,6 @@ public class OrderItem extends BaseDateEntity {
         this.orderItemStatus = orderItemStatus;
         this.review = false;
     }
-    public OrderItem(Order order, Item item, Delivery delivery, int count, int price, String imageUrl, String itemName, String optionName, OrderItemStatus orderItemStatus) {
-        this.order = order;
-        this.item = item;
-        this.delivery = delivery;
-        this.count = count;
-        this.price = BigDecimal.valueOf(price);
-        this.imageUrl = imageUrl;
-        this.itemName = itemName;
-        this.optionName = optionName;
-        this.orderItemStatus = orderItemStatus;
-        this.review = false;
-    }
-
     //==========편의 메서드===========
     public void updateOrder(Order order) {
         this.order = order;

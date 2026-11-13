@@ -1,6 +1,7 @@
 package myshop.shop.controller.sellerWeb;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -27,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import static myshop.shop.controller.memberWeb.MemberController.SessionConst.LOGIN_SELLER;
-
 
 @Controller
 @Slf4j
@@ -56,8 +56,6 @@ public class ItemController {
         return "seller/item/item_manage";
     }
 
-
-
     /**
      * 상품 관리 -> 새 상품 등록 폼
      */
@@ -66,8 +64,6 @@ public class ItemController {
         model.addAttribute("addItemDto", new AddItemDto());
         return "seller/item/item_new";
     }
-
-
 
     /**
      * 새 상품 등록 폼 -> 상품 등록 완료
@@ -91,8 +87,6 @@ public class ItemController {
         return "redirect:/seller/item_manage";
     }
 
-
-
     /**
      * 상품 관리 폼 -> 수정 데이터
      */
@@ -104,8 +98,6 @@ public class ItemController {
         log.info("itemModifyData={}", itemModifyData);
         return itemModifyData;
     }
-
-
 
     /**
      * 상품 관리 폼 -> 수정 완료
@@ -140,8 +132,6 @@ public class ItemController {
         return (mainImage != null && !mainImage.isEmpty()) || (subImages != null && !subImages.isEmpty() && !subImages.get(0).isEmpty());
     }
 
-
-
     /**
      * 상품 관리 폼 -> 일괄 수정
      */
@@ -163,19 +153,13 @@ public class ItemController {
         public BulkModifyItemDto() {
         }
 
-        public BulkModifyItemDto(List<Long> itemNos, ItemStatus itemStatus, Integer discountPer) {
-            this.itemNos = itemNos;
-            this.itemStatus = itemStatus;
-            this.discountPer = BigDecimal.valueOf(discountPer);
-        }
+        @Builder
         public BulkModifyItemDto(List<Long> itemNos, ItemStatus itemStatus, BigDecimal discountPer) {
             this.itemNos = itemNos;
             this.itemStatus = itemStatus;
             this.discountPer = discountPer;
         }
     }
-
-
 
     /**
      * 상품 1개 삭제

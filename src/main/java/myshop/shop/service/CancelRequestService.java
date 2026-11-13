@@ -42,12 +42,15 @@ public class CancelRequestService {
 
         orderItem.updateOrderItemStatus(OrderItemStatus.취소접수);
 
-        CancelRequest saveCancelRequest = new CancelRequest(orderItem, memberProxy,
-                saveCancelRequestDto.getCount(),
-                saveCancelRequestDto.getCancelReasonCode(),
-                saveCancelRequestDto.getReasonDetail(),
-                saveCancelRequestDto.getPrice(),
-                CancelRequestStatus.요청);
+        CancelRequest saveCancelRequest = CancelRequest.builder()
+                .orderItem(orderItem)
+                .member(memberProxy)
+                .count(saveCancelRequestDto.getCount())
+                .cancelReasonCode(saveCancelRequestDto.getCancelReasonCode())
+                .reasonDetail(saveCancelRequestDto.getReasonDetail())
+                .price(saveCancelRequestDto.getPrice())
+                .cancelRequestStatus(CancelRequestStatus.요청)
+                .build();
 
         cancelRequestRepository.save(saveCancelRequest);
     }
@@ -77,8 +80,13 @@ public class CancelRequestService {
         }
         else if (requestDecisionDto.getAction().equals("승인") && cancelRequest != null) {
             cancelRequest.updateCancelRequestStatus(CancelRequestStatus.승인);
-            refundRepository.save(new Refund(cancelRequest, null, requestDecisionDto.getTotalPrice(),
-                    requestDecisionDto.getDeliveryFee(), requestDecisionDto.getRefundPrice(), RefundStatus.진행중));
+            refundRepository.save(Refund.builder()
+                    .cancelRequest(cancelRequest)
+                    .deliveryFee(requestDecisionDto.getTotalPrice())
+                    .totalPrice(requestDecisionDto.getDeliveryFee())
+                    .refundPrice(requestDecisionDto.getRefundPrice())
+                    .refundStatus(RefundStatus.진행중)
+                    .build());
         }
         else if (requestDecisionDto.getAction().equals("완료") && cancelRequest != null) {
             cancelRequest.updateCancelRequestStatus(CancelRequestStatus.완료);

@@ -1,6 +1,7 @@
 package myshop.shop.entity.cancelRequest;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import myshop.shop.entity.BaseDateEntity;
 import myshop.shop.entity.orderItem.OrderItem;
@@ -40,11 +41,10 @@ public class CancelRequest extends BaseDateEntity {
 
     private String decisionReason;
 
-
-
     public CancelRequest() {
     }
 
+    @Builder
     public CancelRequest(OrderItem orderItem, Member member, int count, CancelReasonCode cancelReasonCode, String reasonDetail, BigDecimal price, CancelRequestStatus cancelRequestStatus) {
         this.orderItem = orderItem;
         this.member = member;

@@ -1,6 +1,7 @@
 package myshop.shop.entity.member;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import myshop.shop.entity.Address;
@@ -28,7 +29,6 @@ public class Member extends BaseDateEntity {
     private String telecom;
     private String phoneNumber;
 
-
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -47,6 +47,7 @@ public class Member extends BaseDateEntity {
     public Member() {
     }
 
+    @Builder
     public Member(String id, String email, String password, String name, String telecom, String phoneNumber, Gender gender, MemberLevel memberLevel) {
         this.id = id;
         this.email = email;

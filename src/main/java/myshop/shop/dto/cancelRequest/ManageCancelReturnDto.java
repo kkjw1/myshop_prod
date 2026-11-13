@@ -1,6 +1,9 @@
 package myshop.shop.dto.cancelRequest;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import myshop.shop.entity.cancelRequest.CancelReasonCode;
@@ -14,6 +17,9 @@ import java.time.LocalDateTime;
 
 @Getter @Setter
 @ToString()
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ManageCancelReturnDto {
 
     /**
@@ -43,6 +49,4 @@ public class ManageCancelReturnDto {
     private int count;
     private String imageUrl;
 
-    public ManageCancelReturnDto() {
-    }
 }

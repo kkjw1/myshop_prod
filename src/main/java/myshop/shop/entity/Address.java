@@ -1,6 +1,7 @@
 package myshop.shop.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import myshop.shop.entity.member.Member;
@@ -26,21 +27,10 @@ public class Address extends BaseDateEntity{
     private String detailAddress;
     private Boolean isMain;
 
-
     public Address() {
     }
 
-    // 회원가입
-    public Address(Member member, String addressName, String postcode, String roadAddress, String detailAddress, String recipientName, String phoneNumber) {
-        this.member = member;
-        this.addressName = addressName;
-        this.postcode = postcode;
-        this.roadAddress = roadAddress;
-        this.detailAddress = detailAddress;
-        this.recipientName = recipientName;
-        this.phoneNumber = phoneNumber;
-    }
-
+    @Builder
     public Address(Member member, String addressName, String recipientName, String phoneNumber, String postcode,
                    String roadAddress, String detailAddress, boolean isMain) {
         this.member = member;

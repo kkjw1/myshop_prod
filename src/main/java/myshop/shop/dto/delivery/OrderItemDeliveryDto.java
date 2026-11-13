@@ -1,6 +1,9 @@
 package myshop.shop.dto.delivery;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import myshop.shop.entity.delivery.DeliveryStatus;
@@ -10,6 +13,9 @@ import java.math.BigDecimal;
 
 @Getter @Setter
 @ToString(of = {"orderItemNo", "itemName", "count", "price", "deliveryStatus", "courier", "trackingNumber", "orderItemStatus"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderItemDeliveryDto {
     /**
      * - 관리 쪽 -
@@ -24,6 +30,4 @@ public class OrderItemDeliveryDto {
     private String trackingNumber;
     private OrderItemStatus orderItemStatus;        // 상품주문상태
 
-    public OrderItemDeliveryDto() {
-    }
 }

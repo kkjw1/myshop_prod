@@ -1,6 +1,9 @@
 package myshop.shop.dto.item;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Setter;
 import lombok.ToString;
 import myshop.shop.entity.item.Item;
@@ -16,6 +19,9 @@ import java.util.Map;
 @Getter @Setter
 @ToString(of = {"itemNo", "name", "price", "totalStock", "itemStatus", "discountPer", "modifyItemOptionDtoList",
         "mainImage", "mainImageUrl", "mainImageName", "subImages", "subImagesInfo", "content"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ModifyItemDto {
     private Long itemNo;
     private String name;
@@ -25,38 +31,22 @@ public class ModifyItemDto {
     private ItemStatus itemStatus;
     private BigDecimal discountPer;
 
+    @Builder.Default
     private List<ModifyItemOptionDto> modifyItemOptionDtoList = new ArrayList<>();
 
     private MultipartFile mainImage;
     private String mainImageUrl;
     private String mainImageName;
 
+    @Builder.Default
     private List<MultipartFile> subImages = new ArrayList<>();
+    @Builder.Default
     private List<Map<String, String>> subImagesInfo = new ArrayList<>();
 
     private String content;
 
-    public ModifyItemDto() {
-    }
-
-    public ModifyItemDto(String name, int price, int totalStock, ItemStatus itemStatus, int discountPer, List<ModifyItemOptionDto> modifyItemOptionDtoList) {
-        this.name = name;
-        this.price = BigDecimal.valueOf(price);
-        this.totalStock = totalStock;
-        this.itemStatus = itemStatus;
-        this.discountPer = BigDecimal.valueOf(discountPer);
-        this.modifyItemOptionDtoList = modifyItemOptionDtoList;
-    }
-    public ModifyItemDto(String name, BigDecimal price, int totalStock, ItemStatus itemStatus, BigDecimal discountPer, List<ModifyItemOptionDto> modifyItemOptionDtoList) {
-        this.name = name;
-        this.price = price;
-        this.totalStock = totalStock;
-        this.itemStatus = itemStatus;
-        this.discountPer = discountPer;
-        this.modifyItemOptionDtoList = modifyItemOptionDtoList;
-    }
-
     public ModifyItemDto(Item item, List<ItemOption> itemOptionList) {
+        this();
         this.name = item.getName();
         this.price = item.getOriginalPrice();
         this.totalStock = item.getTotalStock();

@@ -1,6 +1,7 @@
 package myshop.shop.entity.log;
 
 import jakarta.persistence.Column;
+import lombok.Builder;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -21,6 +22,7 @@ public class LoginLog extends LogBaseEntity {
     public LoginLog() {
     }
 
+    @Builder
     public LoginLog(String id) {
         this.id = id;
     }

@@ -1,6 +1,7 @@
 package myshop.shop.controller.memberWeb;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -25,7 +26,6 @@ public class CartController {
 
     private final CartService cartService;
 
-
     /**
      * 상품 상세 폼 -> 장바구니 담기
      */
@@ -42,7 +42,6 @@ public class CartController {
         return true;
     }
 
-
     /**
      * 장바구니 폼
      */
@@ -57,7 +56,6 @@ public class CartController {
         model.addAttribute("manageCartDtoList", manageCartDtoList);
         return "member/mypage/cart";
     }
-
 
     /**
      * 장바구니 폼 -> 수량 변경
@@ -76,12 +74,12 @@ public class CartController {
         public UpdateCartCount() {
         }
 
+        @Builder
         public UpdateCartCount(Long cartNo, int count) {
             this.cartNo = cartNo;
             this.count = count;
         }
     }
-
 
     /**
      * 장바구니 폼 -> 삭제
@@ -92,7 +90,6 @@ public class CartController {
          cartService.removeCart(cartNo);
          return true;
     }
-
 
     /**
      * 장바구니 폼 -> 선택 삭제
@@ -105,8 +102,5 @@ public class CartController {
         }
         return true;
     }
-
-
-
 
 }

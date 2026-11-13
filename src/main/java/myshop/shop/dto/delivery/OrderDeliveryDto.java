@@ -1,6 +1,9 @@
 package myshop.shop.dto.delivery;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import myshop.shop.entity.order.OrderStatus;
@@ -12,6 +15,9 @@ import java.util.List;
 
 @Getter @Setter
 @ToString(of = {"orderStatus", "orderNo", "orderInfo", "totalPrice", "orderTime", "recipientName", "recipientPhone", "postcode", "roadAddress", "detailAddress", "deliveryRequest"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderDeliveryDto {
     /**
      * 주문 상태
@@ -36,6 +42,4 @@ public class OrderDeliveryDto {
     private String detailAddress;
     private String deliveryRequest;
 
-    public OrderDeliveryDto() {
-    }
 }

@@ -1,6 +1,7 @@
 package myshop.shop.controller.memberWeb;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -44,8 +45,6 @@ public class OrderController {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-
-
     /**
      * 주문/결제 폼
      * 장바구니 폼 -> 구매하기
@@ -70,7 +69,6 @@ public class OrderController {
             manageCartDtoList.add(cartService.findCart(cartNo));
         }
 
-
         model.addAttribute("totalProductPrice", cartToOrderDto.getTotalProductPrice());
         model.addAttribute("deliveryFee", cartToOrderDto.getDeliveryFee());
         model.addAttribute("totalOrderPrice", cartToOrderDto.getTotalOrderPrice());
@@ -91,9 +89,6 @@ public class OrderController {
         public CartToOrderDto() {
         }
     }
-
-
-
 
     /**
      * 주문/결제 폼
@@ -158,6 +153,7 @@ public class OrderController {
         public CheckDirectOrderDto() {
         }
 
+        @Builder
         public CheckDirectOrderDto(Long itemNo, Long memberNo, Long itemOptionNo, Long itemImageNo, int count) {
             this.itemNo = itemNo;
             this.memberNo = memberNo;
@@ -176,8 +172,6 @@ public class OrderController {
         return "재고가 부족합니다.";
     }
 
-
-
     /**
      * 주문/결제 폼 -> 배송지 변경
      */
@@ -189,8 +183,6 @@ public class OrderController {
 
         return addressService.getAddressesByMemberNo(memberNo);
     }
-
-
 
     /**
      * 결제 완료(장바구니)
@@ -211,7 +203,6 @@ public class OrderController {
         for (AddOrderItemDto addOrderItemDto : addOrderItemDtoList) {
             cartNoList.add(addOrderItemDto.getCartNo());
         }
-
 
   /*      StringJoiner joiner = new StringJoiner(",", "[", "]");
         for (AddOrderItemDto addOrderItemDto : addOrderItemDtoList) {
@@ -242,8 +233,6 @@ public class OrderController {
         }
         return order.getNo();
     }
-
-
 
     /**
      * 결제 완료(바로구매)
@@ -279,7 +268,6 @@ public class OrderController {
         return order.getNo();
     }
 
-
     /**
      * 주문 상세 화면
      * 주문/결제 폼 -> 결제하기
@@ -297,8 +285,6 @@ public class OrderController {
         model.addAttribute("orderNo", orderNo);
         return "member/mypage/order_complete";
     }
-
-
 
     /**
      * 주문 목록/배송 조회 폼
@@ -319,6 +305,5 @@ public class OrderController {
         model.addAttribute("manageOrderDtoList", manageOrderDtoList);
         return "member/mypage/order_list";
     }
-
 
 }

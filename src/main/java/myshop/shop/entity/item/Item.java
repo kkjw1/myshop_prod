@@ -1,6 +1,7 @@
 package myshop.shop.entity.item;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import myshop.shop.entity.BaseDateEntity;
 import myshop.shop.entity.Cart;
@@ -56,42 +57,8 @@ public class Item extends BaseDateEntity {
     public Item() {
     }
 
-    public Item(Seller seller, String name, ItemCategory itemCategory, int originalPrice, int totalStock, int discountPer, String content, ItemStatus itemStatus) {
-        this.seller = seller;
-        this.name = name;
-        this.itemCategory = itemCategory;
-        this.originalPrice = BigDecimal.valueOf(originalPrice);
-        this.totalStock = totalStock;
-        this.discountPer = BigDecimal.valueOf(discountPer);
-        this.content = content;
-        this.itemStatus = itemStatus;
-        this.viewCount = 0L;
-    }
-    // int -> BigDecimal: originalPrice, discountPer
-    public Item(Seller seller, String name, ItemCategory itemCategory, BigDecimal originalPrice, int totalStock, BigDecimal discountPer, String content, ItemStatus itemStatus) {
-        this.seller = seller;
-        this.name = name;
-        this.itemCategory = itemCategory;
-        this.originalPrice = originalPrice;
-        this.totalStock = totalStock;
-        this.discountPer = discountPer;
-        this.content = content;
-        this.itemStatus = itemStatus;
-        this.viewCount = 0L;
-    }
-
-    // viewCount 주입, 테스트 전용
-    public Item(Seller seller, String name, ItemCategory itemCategory, int originalPrice, int totalStock, int discountPer, String content, ItemStatus itemStatus, Long viewCount) {
-        this.seller = seller;
-        this.name = name;
-        this.itemCategory = itemCategory;
-        this.originalPrice = BigDecimal.valueOf(originalPrice);
-        this.totalStock = totalStock;
-        this.discountPer = BigDecimal.valueOf(discountPer);
-        this.content = content;
-        this.itemStatus = itemStatus;
-        this.viewCount = viewCount;
-    }
+    // viewCount가 null이면 0으로 초기화 (테스트에서는 viewCount 주입 가능)
+    @Builder
     public Item(Seller seller, String name, ItemCategory itemCategory, BigDecimal originalPrice, int totalStock, BigDecimal discountPer, String content, ItemStatus itemStatus, Long viewCount) {
         this.seller = seller;
         this.name = name;
@@ -101,7 +68,7 @@ public class Item extends BaseDateEntity {
         this.discountPer = discountPer;
         this.content = content;
         this.itemStatus = itemStatus;
-        this.viewCount = viewCount;
+        this.viewCount = viewCount != null ? viewCount : 0L;
     }
 
     public void updateName(String name) {

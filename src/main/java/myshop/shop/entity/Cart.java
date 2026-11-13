@@ -1,7 +1,7 @@
 package myshop.shop.entity;
 
-
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import myshop.shop.entity.item.Item;
 import myshop.shop.entity.item.ItemImage;
@@ -32,23 +32,17 @@ public class Cart extends BaseDateEntity {
     @JoinColumn(name = "ITEM_OPTION_NO")
     private ItemOption itemOption;
 
-
     private int count;
 
     public Cart() {
     }
 
+    @Builder
     public Cart(Member member, Item item, int count, ItemOption itemOption) {
         this.member = member;
         this.item = item;
         this.count = count;
         this.itemOption = itemOption;
-    }
-
-    public Cart(Member member, Item item, int count) {
-        this.member = member;
-        this.item = item;
-        this.count = count;
     }
 
     public void updateCount(int count) {

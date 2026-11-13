@@ -1,6 +1,9 @@
 package myshop.shop.dto.order;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -12,6 +15,9 @@ import java.util.List;
 @Getter @Setter
 @ToString(of = {"recipientName", "phoneNumber", "postcode", "roadAddress", "detailAddress",
         "deliveryRequest", "detailOrderItemDtoList", "totalItemPrice", "deliveryFee", "totalOrderPrice", "orderTime"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DetailOrderDto {
     /**
      * 배송지 내용
@@ -40,6 +46,7 @@ public class DetailOrderDto {
      * 7. 상품 이름
      * 8. 옵션 이름
      */
+    @Builder.Default
     private List<DetailOrderItemDto> detailOrderItemDtoList = new ArrayList<>();
 
     /**
@@ -53,8 +60,5 @@ public class DetailOrderDto {
     private BigDecimal totalOrderPrice; // service에서 넣기 필요
 
     private LocalDateTime orderTime;
-
-    public DetailOrderDto() {
-    }
 
 }

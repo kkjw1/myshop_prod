@@ -59,17 +59,21 @@ public class CartService {
         log.info("findCart.isEmpty()={}", findCart.isEmpty());
         if (findCart.isEmpty()) {
             if (itemOptionNo == null) {
-                Cart cart = new Cart(memberProxy,
-                        itemProxy,
-                        count);
+                Cart cart = Cart.builder()
+                        .member(memberProxy)
+                        .item(itemProxy)
+                        .count(count)
+                        .build();
                 cartRepository.save(cart);
             }
             else {
                 ItemOption itemOptionProxy = itemOptionRepository.getReferenceById(itemOptionNo);
-                Cart cart = new Cart(memberProxy,
-                        itemProxy,
-                        count,
-                        itemOptionProxy);
+                Cart cart = Cart.builder()
+                        .member(memberProxy)
+                        .item(itemProxy)
+                        .count(count)
+                        .itemOption(itemOptionProxy)
+                        .build();
                 cartRepository.save(cart);
             }
         }

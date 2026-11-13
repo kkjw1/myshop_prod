@@ -15,8 +15,18 @@ class SellerRepositoryTest {
     @Test
     public void saveTest() throws Exception {
         //given
-        Seller seller = new Seller("test", "test", "kkjjoo1212@naver.com", "판매자테스트", "010-4710-6305", "테스트회사명",
-                "테스트회사전화번호", "테스트회사우편번호", "테스트회사 도로명", "테스트회사 상세주소");
+        Seller seller = Seller.builder()
+                .id("test")
+                .password("test")
+                .email("kkjjoo1212@naver.com")
+                .name("판매자테스트")
+                .phoneNumber("010-4710-6305")
+                .companyName("테스트회사명")
+                .companyPhone("테스트회사전화번호")
+                .postcode("테스트회사우편번호")
+                .roadAddress("테스트회사 도로명")
+                .detailAddress("테스트회사 상세주소")
+                .build();
 
         sellerRepository.save(seller);
 

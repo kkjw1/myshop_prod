@@ -1,12 +1,12 @@
 package myshop.shop.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import myshop.shop.entity.item.Item;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Entity
 @Getter
@@ -36,6 +36,7 @@ public class Seller extends BaseDateEntity{
     public Seller() {
     }
 
+    @Builder
     public Seller(String id, String password, String email, String name, String phoneNumber, String companyName, String companyPhone, String postcode, String roadAddress, String detailAddress) {
         this.id = id;
         this.password = password;

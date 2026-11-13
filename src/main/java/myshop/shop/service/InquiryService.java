@@ -36,13 +36,15 @@ public class InquiryService {
     public void saveInquiry(SaveInquiryDto saveInquiryDto) {
         Item itemProxy = itemRepository.getReferenceById(saveInquiryDto.getItemNo());
 
-        inquiryRepository.save(new Inquiry(itemProxy,
-                saveInquiryDto.getMemberNo(),
-                saveInquiryDto.getOptionName(),
-                saveInquiryDto.getInquiryCategory(),
-                saveInquiryDto.getTitle(),
-                saveInquiryDto.getContent(),
-                InquiryStatus.답변대기));
+        inquiryRepository.save(Inquiry.builder()
+                .item(itemProxy)
+                .memberNo(saveInquiryDto.getMemberNo())
+                .optionName(saveInquiryDto.getOptionName())
+                .inquiryCategory(saveInquiryDto.getInquiryCategory())
+                .title(saveInquiryDto.getTitle())
+                .content(saveInquiryDto.getContent())
+                .inquiryStatus(InquiryStatus.답변대기)
+                .build());
     }
 
 
@@ -53,13 +55,15 @@ public class InquiryService {
     public void saveProductInquiry(SaveInquiryDto saveInquiryDto) {
         Item itemProxy = itemRepository.getReferenceById(saveInquiryDto.getItemNo());
 
-        inquiryRepository.save(new Inquiry(itemProxy,
-                saveInquiryDto.getMemberNo(),
-                saveInquiryDto.getOptionName(),
-                InquiryCategory.PRODUCT,
-                saveInquiryDto.getTitle(),
-                saveInquiryDto.getContent(),
-                InquiryStatus.답변대기));
+        inquiryRepository.save(Inquiry.builder()
+                .item(itemProxy)
+                .memberNo(saveInquiryDto.getMemberNo())
+                .optionName(saveInquiryDto.getOptionName())
+                .inquiryCategory(InquiryCategory.PRODUCT)
+                .title(saveInquiryDto.getTitle())
+                .content(saveInquiryDto.getContent())
+                .inquiryStatus(InquiryStatus.답변대기)
+                .build());
     }
 
 

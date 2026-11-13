@@ -1,6 +1,7 @@
 package myshop.shop.entity.returnRequest;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import myshop.shop.entity.BaseDateEntity;
 import myshop.shop.entity.orderItem.OrderItem;
@@ -42,6 +43,7 @@ public class ReturnRequest extends BaseDateEntity {
     public ReturnRequest() {
     }
 
+    @Builder
     public ReturnRequest(OrderItem orderItem, Member member, int count, ReturnReasonCode returnReasonCode, String reasonDetail, BigDecimal price, ReturnRequestStatus returnRequestStatus) {
         this.orderItem = orderItem;
         this.member = member;

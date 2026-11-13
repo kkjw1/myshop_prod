@@ -34,14 +34,16 @@ public class AddressService {
             addressRepository.updateIsMainToFalse(memberNo);
         }
         Member memberProxy = memberRepository.getReferenceById(memberNo);
-        Address address = new Address(memberProxy,
-                AddAddressDto.getAddressName(),
-                AddAddressDto.getRecipientName(),
-                AddAddressDto.getPhoneNumber(),
-                AddAddressDto.getPostcode(),
-                AddAddressDto.getRoadAddress(),
-                AddAddressDto.getDetailAddress(),
-                AddAddressDto.getIsMain());
+        Address address = Address.builder()
+                .member(memberProxy)
+                .addressName(AddAddressDto.getAddressName())
+                .recipientName(AddAddressDto.getRecipientName())
+                .phoneNumber(AddAddressDto.getPhoneNumber())
+                .postcode(AddAddressDto.getPostcode())
+                .roadAddress(AddAddressDto.getRoadAddress())
+                .detailAddress(AddAddressDto.getDetailAddress())
+                .isMain(AddAddressDto.getIsMain())
+                .build();
         addressRepository.save(address);
     }
 
