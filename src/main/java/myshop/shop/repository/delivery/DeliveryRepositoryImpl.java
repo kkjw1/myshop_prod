@@ -5,6 +5,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import myshop.shop.dto.delivery.OrderDeliveryDto;
 import myshop.shop.dto.delivery.OrderItemDeliveryDto;
+import myshop.shop.entity.delivery.Delivery;
 
 
 import java.util.ArrayList;
@@ -68,23 +69,6 @@ public class DeliveryRepositoryImpl implements DeliveryRepositoryCustom{
             if (orderDeliveryDto == null) {
                 continue;
             }
-/*
-            List<OrderItemDeliveryDto> orderItemDeliveryDtoList = queryFactory
-                    .select(Projections.fields(OrderItemDeliveryDto.class,
-                            orderItem.no.as("orderItemNo"),
-                            orderItem.itemName,
-                            orderItem.count,
-                            orderItem.price,
-                            delivery.deliveryStatus,
-                            delivery.courier,
-                            delivery.trackingNumber))
-                    .from(orderItem)
-                    .leftJoin(orderItem.delivery, delivery)
-                    .where(orderItem.order.no.eq(orderNo))
-                    .fetch();
-
-            orderDeliveryDto.setOrderItemDeliveryDtoList(orderItemDeliveryDtoList);
-*/
 
             orderDeliveryDtoList.add(orderDeliveryDto);
         }
@@ -107,6 +91,16 @@ public class DeliveryRepositoryImpl implements DeliveryRepositoryCustom{
                 .leftJoin(orderItem.delivery, delivery)
                 .where(orderItem.order.no.eq(orderNo))
                 .fetch();
+    }
+
+    @Override
+    public Delivery getDelivery(Long orderItemNo) {
+        return queryFactory
+                .select(delivery)
+                .from(orderItem)
+                .join(orderItem.delivery, delivery)
+                .where(orderItem.no.eq(orderItemNo))
+                .fetchOne();
     }
 
 }

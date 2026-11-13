@@ -27,6 +27,7 @@ repositories {
 dependencyManagement {
     imports {
         mavenBom 'com.oracle.database.jdbc:ojdbc-bom:23.26.3.0.0'
+        mavenBom "org.springframework.ai:spring-ai-bom:2.0.0"
     }
 }
 
@@ -81,6 +82,9 @@ dependencies {
     implementation 'com.oracle.oci.sdk:oci-java-sdk-common:3.95.0'
     implementation 'com.oracle.oci.sdk:oci-java-sdk-objectstorage:3.95.0'
     implementation 'com.oracle.oci.sdk:oci-java-sdk-common-httpclient-jersey3:3.95.0'
+
+    // Spring AI
+    implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
 }
 
 tasks.named('bootJar') {

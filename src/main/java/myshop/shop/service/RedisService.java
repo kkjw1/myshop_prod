@@ -3,9 +3,7 @@ package myshop.shop.service;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import myshop.shop.service.ItemService.ItemStockUpdateDto;
 import org.jspecify.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -107,6 +104,24 @@ public class RedisService implements MessageListener {
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
         return (String) valueOperations.get(key);
     }
+
+
+    /**
+     * 문자열 그대로 저장(JSON 따옴표 없음)
+     * 주문 취소 초안 (AI 에이전트)
+     */
+    public void saveString(String key, String value, long minutes) {
+        stringRedisTemplate.opsForValue().set(key, value, Duration.ofMinutes(minutes));
+    }
+
+    /**
+     * 조회와 동시에 삭제
+     * AI 에이전트
+     */
+    public String getAndDeleteData(String key) {
+        return stringRedisTemplate.opsForValue().getAndDelete(key);
+    }
+
 
     public void deleteData(String key) {
         redisTemplate.delete(key);

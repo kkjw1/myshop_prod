@@ -35,6 +35,7 @@ public class CancelRequestService {
     /**
      * 주문 취소 신청
      * 주문 목록/배송 조회 -> 주문 취소 신청
+     * AI 에이전트 -> 취소 확정 버튼
      */
     public void saveCancelRequest(SaveCancelRequestDto saveCancelRequestDto) {
         OrderItem orderItem = orderItemRepository.findById(saveCancelRequestDto.getOrderItemNo()).orElse(null);
