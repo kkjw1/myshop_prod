@@ -66,6 +66,7 @@ logging.level:
 #  org.hibernate.type: trace
 
 server:
+  forward-headers-strategy: native
   servlet:
     session:
       timeout: 6000   #세션 타임아웃 설정(기본:초)

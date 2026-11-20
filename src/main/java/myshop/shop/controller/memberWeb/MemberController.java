@@ -107,7 +107,7 @@ public class MemberController {
         ResponseCookie.ResponseCookieBuilder refreshCookieBuilder = ResponseCookie
                 .from("refreshToken", refreshToken)     // 쿠키 이름, value
                 .httpOnly(true)                               // js 접근 차단, http요청만
-                .secure(false)                                // HTTPS
+                .secure(true)                                // HTTPS
                 .path("/")                                    // url 경로 범위
                 .sameSite("Strict");                          // 외부사이트 요청에 쿠키 사용X <-> "Lax"
         if (loginMemberDto.getLoginCheck()) {
@@ -118,7 +118,7 @@ public class MemberController {
         ResponseCookie accessCookie = ResponseCookie
                 .from("accessToken", accessToken)
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
                 .maxAge(Duration.ofMillis(accessCookieValidity))
                 .sameSite("Strict")
@@ -154,7 +154,7 @@ public class MemberController {
         // 클라이언트 쿠키 삭제
         ResponseCookie deleteRefresh = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
                 .maxAge(0) // 즉시 만료
                 .sameSite("Strict")
@@ -162,7 +162,7 @@ public class MemberController {
 
         ResponseCookie deleteAccess = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
                 .maxAge(0)
                 .sameSite("Strict")

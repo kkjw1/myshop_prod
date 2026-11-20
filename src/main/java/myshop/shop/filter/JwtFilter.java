@@ -75,7 +75,7 @@ public class JwtFilter implements Filter {
                     ResponseCookie newAccessCookie = ResponseCookie
                             .from("accessToken", newAccessToken)
                             .httpOnly(true)
-                            .secure(false)
+                            .secure(true)
                             .path("/")
                             .maxAge(Duration.ofMillis(accessCookieValidity))
                             .sameSite("Strict")
@@ -99,7 +99,7 @@ public class JwtFilter implements Filter {
 
                 ResponseCookie deleteAccess = ResponseCookie.from("accessToken", "")
                         .httpOnly(true)
-                        .secure(false)
+                        .secure(true)
                         .path("/")
                         .maxAge(0)
                         .sameSite("Strict")
