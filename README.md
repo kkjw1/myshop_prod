@@ -1,4 +1,4 @@
-## 🔗 서비스 접속 주소: [http://jwshop.cloud](http://jwshop.cloud)
+## 🔗 서비스 접속 주소: [https://jwshop.cloud](https://jwshop.cloud)
 
 > 💡 **테스트용 계정 정보** 
 > - **일반 사용자 계정**: `test` / `test`
@@ -13,10 +13,11 @@ Oracle Cloud Infrastructure(OCI) 백엔드 배포 환경입니다. 제한된 무
 
 ```
 [사용자]
-   │  HTTP (도메인 접속), http://jwshop.cloud, http://www.jwshop.cloud
+   │  HTTPS (443), https://jwshop.cloud, https://www.jwshop.cloud
+   │  HTTP (80) 요청은 HTTPS로 301 리다이렉트
    ▼
-[Nginx]  (도메인 연결, 80 포트, 리버스 프록시)
-   │  127.0.0.1:8080
+[Nginx]  (도메인 연결, TLS 종료 - Let's Encrypt 인증서, 리버스 프록시)
+   │  HTTP, 127.0.0.1:8080 (X-Forwarded-Proto 전달)
    ▼
 [Spring Boot]  (VM.Standard.E2.1.Micro, 1 OCPU / 1GB RAM)
    ├─ Oracle Autonomous AI Database  (TLS 인증, Wallet 불필요)
@@ -33,6 +34,16 @@ Oracle Cloud Infrastructure(OCI) 백엔드 배포 환경입니다. 제한된 무
 - **프로세스 관리**: systemd 유닛으로 등록하여 서버 재부팅 시 자동 기동 및 비정상 종료 시 자동 재시작(`Restart=on-failure`) 보장
 
 ---
+
+
+### HTTPS 적용 (Let's Encrypt)
+
+Spring Boot는 HTTP(8080)로 그대로 두고, **Nginx에서 TLS를 종료**하는 구조로 HTTPS를 적용했습니다.
+
+```
+사용자 ──HTTPS:443──▶ Nginx (Let's Encrypt 인증서) ──HTTP──▶ 127.0.0.1:8080 (Spring Boot)
+사용자 ──HTTP:80────▶ Nginx ──301──▶ https://jwshop.cloud
+```
 
 ### CI/CD
 
